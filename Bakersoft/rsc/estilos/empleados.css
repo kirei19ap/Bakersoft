@@ -1,0 +1,54 @@
+/*Estilos para el contenido principal Empleados*/
+:root{
+    --color-boton:#157a33;
+    --color-boton-texto:rgb(255, 255, 255);
+}
+
+.contenido-principal{
+    width: 70%;
+    margin-left: 300px;
+    padding-top: 40px;
+}
+.contenido-principal .encabezado-tabla{
+    display: flex;
+    justify-content: space-between;
+}
+.contenido-principal .encabezado-tabla .boton-agregar{
+    padding: 5px;
+}
+.contenido-principal .encabezado-tabla .buscador{
+    padding: 5px;
+}
+.contenido-principal .encabezado-tabla .buscador input{
+    width: 200px;
+    height: 35px;
+}
+.contenido-principal .contenido{
+    padding-top: 20px;
+}
+.contenido-principal .contenido .tabla-empleados button{
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+}
+.contenido-principal .contenido .tabla-empleados button ion-icon{
+    font-size: 20px;    
+}
+.boton-agregar{
+    display: flex;
+    align-items: center;
+    background-color: var(--color-boton);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.boton-agregar a{
+    text-decoration: none;
+    color: var(--color-boton-texto);
+}
+.boton-agregar ion-icon{
+    font-size: 20px;
+    color: var(--color-boton-texto);
+}
