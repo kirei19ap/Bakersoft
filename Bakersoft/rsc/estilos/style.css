@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root{
+    --color-barra-lateral:rgb(83, 83, 83);
+    --color-texto:rgb(0,0,0);
+    --color-texto-menu:rgb(233, 233, 233);
+    --color-boton:rgb(0,0,0);
+    --color-boton-texto:rgb(255,255,255);
+    --color-menu-hover:rgb(238,238,238);
+    --color-menu-hover-texto:rgb(0,0,0);
+    --color-linea:rgb(241,241,241);
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body{
+    height: 100vh;
+    width: 100%;
+    /* background: linear-gradient(0deg, rgba(0, 0, 0, 0.9), rgba(29, 29, 29, 0.9)), url(../img/Fondo.jpg);*/
+    background-color: #E5E5E5;
+    background-position: center;
+    background-size: cover;
+
+}
+.barra-lateral{
+    width: 250px;
+    height: 100%;
+    overflow: hidden;
+    padding: 20px 15px;
+    transition: width 0.5s ease;
+    background-color: var(--color-barra-lateral);
+    position: fixed;;
+}
+.mini-barra-lateral{
+    width: 80px;
+}
+.barra-lateral span {
+    width: 100px;
+    white-space: nowrap;
+    text-align: left;
+    font-size: 18px;
+    opacity: 1;
+    transition: opacity 0.5s ease, width 0.3s ease;
+}
+.barra-lateral span.oculto{
+    opacity: 0;
+    width: 0;
+}
+
+.barra-lateral .nombre-pagina span.oculto{
+    opacity: 0;
+}
+
+/*Estilos para el nombre de la pagina*/
+
+.barra-lateral .nombre-pagina{
+    width: 100%;
+    height: 45px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+}
+.barra-lateral .nombre-pagina img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    font-size: 40px;
+    margin-left: 15px;
+}
+.barra-lateral .nombre-pagina span {
+    font-size: 25px;
+    margin-left: 20px;
+    color: white;;
+}
+
+/*Estilos para los botones de la barra lateral*/
+.barra-lateral .boton{
+    width: 100%;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    border: none;  
+    border-radius: 10px;
+    background-color: var(--color-boton);
+    color: var(--color-boton-texto);
+    margin-bottom: 20px;
+}
+.barra-lateral .boton ion-icon{
+    font-size: 25px;
+    min-width: 50px;
+    cursor: pointer;
+}
+
+/*Menu de navegacion*/
+
+.barra-lateral .navegacion ul{
+    padding: 0;
+   
+}
+
+.barra-lateral .navegacion li{
+ list-style: none;
+ display: flex;
+ margin-bottom: 5px;
+} 
+.barra-lateral .navegacion a{
+    width: 100%;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 10px;
+    background-color: var(--color-barra-lateral);
+    color: var(--color-texto-menu);
+}
+.barra-lateral .navegacion ion-icon{
+    min-width: 50px;
+    font-size: 20px;
+}
+.barra-lateral .navegacion a:hover{
+    background-color: var(--color-menu-hover);
+    color: var(--color-menu-hover-texto);
+}
+.barra-lateral .navegacion .active {
+    background-color: var(--color-menu-hover);
+    color: var(--color-menu-hover-texto);
+}
+
+
+.cerrar_sesion a{
+    margin-top: 150%;
+    color: rgb(240, 112, 112) !important;
+}
+.cerrar_sesion a:hover{
+    background-color: #f7c1c1;
+    color: white;
+}
+
+/*Estio de linea divisoria*/
+
+.barra-lateral .linea {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-linea);
+}
+
+/*Estilos para el logo del usuario*/
+
+.barra-lateral .usuario{
+    width: 100%;
+    display: flex;
+    margin-bottom: 20px;
+}
+.barra-lateral .usuario img{
+    width: 50px;
+    min-width: 50px;
+    border-radius: 10px;
+}
+.barra-lateral .usuario .datos-usuario{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-texto);
+    overflow: hidden;
+}
+.barra-lateral .usuario .nombre-email{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+}
+.barra-lateral .usuario .nombre{
+    font-size: 18px;
+    font-weight: 600;
+}
+.barra-lateral .usuario .email {
+    font-size: 15px;
+}
+.barra-lateral .usuario ion-icon{
+    font-size: 20px;
+}
+

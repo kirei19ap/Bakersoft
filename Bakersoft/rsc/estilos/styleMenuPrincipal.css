@@ -1,0 +1,53 @@
+body.menu-fondo {
+    margin: 0;
+    padding: 0;
+    background-image: url(../img/Fondo.jpg);
+    background-size: cover;
+    background-position: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-container {
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.menu-container h1 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.botones-menu button {
+    display: block;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botones-menu button:hover {
+    background-color: #cfcfcf;
+}
+
+
+.logo {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+    height: auto;
+    border-radius: 100px;
+}
