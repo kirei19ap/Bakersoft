@@ -36,6 +36,17 @@ class modeloMP {
         $consulta = $this->PDO->prepare("SELECT * FROM materiaprima");
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
+
+    public function consultarMP($nombre){
+        $consulta = $this->PDO->prepare("SELECT * FROM materiaprima WHERE nombre = :nombre");
+        $consulta->bindParam(":nombre",$nombre);
+        $consulta->execute();
+        if($consulta->rowCount() > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
 
 

@@ -6,12 +6,11 @@ if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
 }
-    require_once("../controlador/controladorMP.php");
-    $obj = new controladorMP();
+    require_once("../controlador/controladorProveedores.php");
+    $obj = new controladorProveedor();
 
     #var_dump($_POST);
    if(isset($_POST['nombre'])){
-            $obj->guardar($_POST['nombre'],$_POST['stockminimo'],$_POST['stockactual']);
+        $respuesta = $obj->guardar($_POST['nombre'],$_POST['direccion'],$_POST['email'],$_POST['telefono']);
     }
-
 ?>

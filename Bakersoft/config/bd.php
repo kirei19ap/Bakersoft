@@ -1,10 +1,17 @@
 <?php
 
 class bd {
-    private $host = "localhost";
-    private $dbname = "bakersoft";
-    private $user = "root";
-    private $password = "";
+    private $host;
+    private $dbname;
+    private $user;
+    private $password;
+
+    function __construct(){
+        $this->host = "localhost";
+        $this->dbname = "bakersoft";
+        $this->user = "root";
+        $this->password = "";
+    }
 
     public function conexion(){
     try{

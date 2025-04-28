@@ -7,7 +7,6 @@ if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -52,13 +51,13 @@ if (!isset($_SESSION['user'])) {
         <nav class="navegacion">
             <ul>
                 <li>
-                    <a class="active" href="index.php">
+                    <a class="" href="../../materiaprima/vista/index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Materia Prima</span>
                     </a>
                 </li>
                 <li>
-                    <a href="../../proveedores/vista/index.php">
+                    <a class="active "href="index.php">
                         <ion-icon name="git-pull-request-outline"></ion-icon>
                         <span>Proveedores</span>
                     </a>
