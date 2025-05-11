@@ -14,7 +14,7 @@
 
 
     
-<script src="../../rsc/script/scriptMP.js"></script>
+<script src="../../rsc/script/scriptUSU.js"></script>
 </body>
 
 </html>

@@ -7,6 +7,7 @@ if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +23,6 @@ if (!isset($_SESSION['user'])) {
     <link rel="stylesheet" href="../../rsc/estilos/style.css">
     <link rel="stylesheet" href="../../rsc/estilos/contenido.css">
     <link rel="stylecheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -44,28 +44,28 @@ if (!isset($_SESSION['user'])) {
                 <div class="nombre-email">
                     <span class="nombre"><?php echo $_SESSION['nomyapellido'];  ?></span>
                     <span class="rol"><?php echo $_SESSION['rol'];  ?></span>
-
                 </div>
             </div>
-
         </div>
         <div class="cerrar_sesion">
         <ion-icon name="lock-closed-outline">
         <span></ion-icon><a href="../../login/vista/logout.php">Cerrar Sesión</a></span>
         </div>
+        
+
 
         <nav class="navegacion">
             <ul>
                 <li>
-                    <a class="" href="../../materiaprima/vista/index.php">
+                    <a class="active" href="index.php">
                         <ion-icon name="people-outline"></ion-icon>
-                        <span>Materia Prima</span>
+                        <span>Usuarios</span>
                     </a>
                 </li>
                 <li>
-                    <a class="active" href="index.php">
-                        <ion-icon name="git-pull-request-outline"></ion-icon>
-                        <span>Proveedores</span>
+                    <a href="index.php">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span>Roles</span>
                     </a>
                 </li>
                 <li>

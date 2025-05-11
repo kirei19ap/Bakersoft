@@ -17,10 +17,12 @@ if (!isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bakersoft</title>
+    <link rel="icon" href="../../favicon.jpg" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
     <link rel="stylesheet" href="../../rsc/estilos/style.css">
     <link rel="stylesheet" href="../../rsc/estilos/contenido.css">
+    <link rel="stylecheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.min.css">
 
 </head>
 
@@ -41,13 +43,15 @@ if (!isset($_SESSION['user'])) {
             <div class="datos-usuario">
                 <div class="nombre-email">
                     <span class="nombre"><?php echo $_SESSION['nomyapellido'];  ?></span>
-                    <span class="cerrar_sesion"><a href="../../login/vista/logout.php">Cerrar Sesión</a></span>
-
+                    <span class="rol"><?php echo $_SESSION['rol'];  ?></span>
                 </div>
             </div>
 
         </div>
-
+        <div class="cerrar_sesion">
+        <ion-icon name="lock-closed-outline">
+        <span></ion-icon><a href="../../login/vista/logout.php">Cerrar Sesión</a></span>
+        </div>
 
         <nav class="navegacion">
             <ul>

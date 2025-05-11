@@ -1,4 +1,5 @@
 <?php
+    session_start();
     require_once("../controlador/controladorProveedores.php");
     $obj = new controladorProveedor();
 

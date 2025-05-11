@@ -42,7 +42,6 @@ body{
     width: 100px;
     white-space: nowrap;
     text-align: left;
-    font-size: 18px;
     opacity: 1;
     transition: opacity 0.5s ease, width 0.3s ease;
 }
@@ -131,10 +130,22 @@ body{
     color: var(--color-menu-hover-texto);
 }
 
+.cerrar_sesion {
+    display: flex; 
+    width: 60%;
+    justify-content:space-evenly;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-left: 40px;
+}
+.cerrar_sesion ion-icon {
 
+    font-size: 18px;
+
+}
 .cerrar_sesion a{
-    margin-top: 150%;
     color: rgb(240, 112, 112) !important;
+    text-decoration: none;
 }
 .cerrar_sesion a:hover{
     background-color: #f7c1c1;
@@ -154,7 +165,7 @@ body{
 .barra-lateral .usuario{
     width: 100%;
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .barra-lateral .usuario img{
     width: 50px;

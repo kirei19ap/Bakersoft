@@ -11,6 +11,6 @@ if (!isset($_SESSION['user'])) {
 
     #var_dump($_POST);
    if(isset($_POST['nombre'])){
-        $respuesta = $obj->guardar($_POST['nombre'],$_POST['direccion'],$_POST['email'],$_POST['telefono']);
+        $respuesta = $obj->guardar($_POST['nombre'],$_POST['calle'],$_POST['altura'],$_POST['provincia'],$_POST['localidad'],$_POST['email'],$_POST['telefono']);
     }
 ?>

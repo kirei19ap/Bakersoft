@@ -11,7 +11,8 @@ if (!isset($_SESSION['user'])) {
 
     #var_dump($_POST);
    if(isset($_POST['nombre'])){
-            $obj->guardar($_POST['nombre'],$_POST['stockminimo'],$_POST['stockactual']);
+            $obj->guardar($_POST['nombre'],$_POST['unidad_medida'],$_POST['stockminimo'],$_POST['stockactual'],$_POST['proveedor']);
+
     }
 
 ?>

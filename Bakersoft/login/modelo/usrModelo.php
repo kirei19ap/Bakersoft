@@ -28,14 +28,16 @@ class usrModelo extends bd{
 
     public function setUser($user){
         $db = new bd(); // Crear una instancia de la clase bd
-       $sql = $db->conexion()->prepare("SELECT * FROM usuarios WHERE usuario = :id_usuario");
+       $sql = $db->conexion()->prepare("SELECT usuarios.id, usuarios.usuario, usuarios.nomyapellido, usuarios.rol, roles.nombre_rol AS nombre_rol FROM usuarios INNER JOIN roles ON usuarios.rol = roles.id_rol WHERE usuario = :id_usuario");
        $sql->bindParam(":id_usuario", $user, PDO::PARAM_STR);
-       $sql->execute();
-       foreach($sql as $row){
-            $this->id_usuario = $row['usuario'];
-           $this->nomyapellido = $row['nomyapellido'];
-       }
-       return $this->id_usuario; // Devuelve el id del usuario
+       #$sql->execute();
+       #foreach($sql as $row){
+       #     $this->id_usuario = $row['usuario'];
+       #     $this->nomyapellido = $row['nomyapellido'];
+       #     $this->rol = $row['rol'];
+       #}
+       #return $this->id_usuario; // Devuelve el id del usuario
+       return ($sql->execute()) ? $sql->fetchAll() : false;
 
     }
 
@@ -43,7 +45,7 @@ class usrModelo extends bd{
         return $this->nomyapellido;
     }
 
-
+ 
 }
 
 

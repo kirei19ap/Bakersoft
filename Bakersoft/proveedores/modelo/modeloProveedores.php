@@ -7,18 +7,22 @@ class modeloProveedor {
         $con = new bd();
         $this->PDO = $con->conexion();
     }
-    public function insertar($nombre, $direccion, $email, $telefono){
-
-        $consulta = $this->PDO->prepare("INSERT INTO proveedor (`id_proveedor`, `nombre`, `direccion`, `email`, `telefono`) VALUES (NULL, '$nombre', '$direccion', '$email', '$telefono')");      
+    public function insertar($nombre, $calle, $altura, $provincia, $localidad, $email, $telefono){
+        
+        $consulta = $this->PDO->prepare("INSERT INTO proveedor (`id_proveedor`, `nombre`, `email`, `telefono`, `calle`, `altura`, `provincia`, `localidad`) VALUES (NULL, '$nombre', '$email', '$telefono', '$calle', '$altura', '$provincia', '$localidad')");      
 
         return ($consulta->execute()) ? $this->PDO->lastInsertId() : false;
 
     }
 
-    public function update($id, $nombre, $direccion, $email, $telefono){
-        $consulta = $this->PDO->prepare("UPDATE proveedor SET nombre= :nombre, direccion = :direccion, email = :email, telefono = :telefono WHERE id_proveedor = :id");
+
+    public function update($id, $nombre, $calle, $altura, $provincia, $localidad, $email, $telefono){
+        $consulta = $this->PDO->prepare("UPDATE proveedor SET nombre= :nombre, calle = :calle, altura = :altura, email = :email, telefono = :telefono, provincia = :provincia, localidad = :localidad WHERE id_proveedor = :id");
         $consulta->bindParam(":nombre",$nombre);
-        $consulta->bindParam(":direccion",$direccion);
+        $consulta->bindParam(":calle",$calle);
+        $consulta->bindParam(":altura",$altura);
+        $consulta->bindParam(":provincia",$provincia);
+        $consulta->bindParam(":localidad",$localidad);
         $consulta->bindParam(":email",$email);
         $consulta->bindParam(":telefono",$telefono);
         $consulta->bindParam(":id",$id);
@@ -28,8 +32,25 @@ class modeloProveedor {
     }
 
     public function delete ($id){
-        $consulta = $this->PDO->prepare("DELETE FROM proveedor WHERE id_proveedor = :id");
-        $consulta->bindParam(":id",$id);
+        try{
+            $consulta = $this->PDO->prepare("DELETE FROM proveedor WHERE id_proveedor = :id");
+            $consulta->bindParam(":id",$id);
+            $resultado = $consulta->execute();
+            return $resultado;
+        }catch (PDOException $e){
+            if ($e->getCode() == "23000") {
+                // Este código es típico cuando hay un conflicto por clave foránea
+                return "ERROR_RELACION";
+            } else {
+                // Para otros errores de base de datos
+                return "ERROR_GENERAL";
+            }
+        }
+        
+
+
+
+
         return ($consulta->execute()) ? true : false ;
     }
 
@@ -48,6 +69,18 @@ class modeloProveedor {
             return false;
         }
     }
+
+    public function listarProvincias(){
+        $consulta = $this->PDO->prepare("SELECT * FROM provincias");
+        return ($consulta->execute()) ? $consulta->fetchAll() : false;
+    }
+
+    public function listarLocalidades($id_provincia){
+        $consulta = $this->PDO->prepare("SELECT * FROM localidades WHERE id_provincia = :id_provincia");
+        $consulta->bindParam(":id_provincia",$id_provincia);
+        return ($consulta->execute()) ? $consulta->fetchAll() : false;
+    }
+    
 }
 
 

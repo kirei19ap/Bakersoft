@@ -19,8 +19,14 @@ class usrControlador{
 
     public function setCurrentUser($user){
         $modelo = new usrModelo(); // Crear una instancia del modelo
-        $_SESSION['user'] = $modelo->setUser($user); // Almacena el nombre de usuario en la sesión
-        $_SESSION['nomyapellido'] = $modelo->getNombre(); // Almacena el nombre y apellido en la sesión
+        #$_SESSION['user'] = $modelo->setUser($user); // Almacena el nombre de usuario en la sesión
+        $reguser = $modelo->setUser($user);
+        return $reguser;
+        #$_SESSION['user'] = $reguser[0]['usuario'];
+        #$_SESSION['nomyapellido'] = $reguser[0]['nomyapellido'];
+        #$_SESSION['rol'] = $reguser['nombre_rol'];
+        #$_SESSION['id_rol'] = $reguser['rol'];
+        #$_SESSION['nomyapellido'] = $modelo->getNombre(); // Almacena el nombre y apellido en la sesión
     }
 
     public function cerrarSesion(){
