@@ -96,7 +96,9 @@ body{
 }
 
 /*Menu de navegacion*/
-
+.barra-lateral .navegacion{
+    margin-top: 30px;
+}
 .barra-lateral .navegacion ul{
     padding: 0;
    
@@ -105,7 +107,7 @@ body{
 .barra-lateral .navegacion li{
  list-style: none;
  display: flex;
- margin-bottom: 5px;
+ margin-bottom: 10px;
 } 
 .barra-lateral .navegacion a{
     width: 100%;
@@ -136,7 +138,7 @@ body{
     justify-content:space-evenly;
     align-items: center;
     margin-bottom: 15px;
-    margin-left: 40px;
+    margin-left: 45px;
 }
 .cerrar_sesion ion-icon {
 
@@ -180,11 +182,16 @@ body{
     color: var(--color-texto);
     overflow: hidden;
 }
+
 .barra-lateral .usuario .nombre-email{
     width: 100%;
     display: flex;
     flex-direction: column;
     margin-left: 5px;
+}
+
+.barra-lateral .usuario .nombre-email .rol {
+    color: white;
 }
 .barra-lateral .usuario .nombre{
     font-size: 18px;

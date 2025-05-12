@@ -59,13 +59,13 @@ if (!isset($_SESSION['user'])) {
         <nav class="navegacion">
             <ul>
                 <li>
-                    <a class="active" href="index.php">
+                    <a href="../../usuarios/vista/index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Usuarios</span>
                     </a>
                 </li>
                 <li>
-                    <a href="../../roles/vista/index.php">
+                    <a class="active" href="index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Roles</span>
                     </a>

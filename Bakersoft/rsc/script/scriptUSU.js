@@ -31,3 +31,46 @@ var table = new DataTable('#Usuarios-lista', {
     "autoWidth": false,
     "responsive": true
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('formUsu');
+    const pass1 = document.getElementById('contrasena');
+    const pass2 = document.getElementById('contrasena_conf');
+    const mismatchFeedback = document.getElementById('passMismatchFeedback');
+  
+    form.addEventListener('submit', function (event) {
+      // Verificación estándar de Bootstrap
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+  
+      // Verificar que las contraseñas coincidan
+      if (pass1.value !== pass2.value) {
+        pass2.classList.add('is-invalid');
+        mismatchFeedback.style.display = 'block';
+        event.preventDefault();
+        event.stopPropagation();
+      } else {
+        pass2.classList.remove('is-invalid');
+        mismatchFeedback.style.display = 'none';
+      }
+    });
+  });
+
+
+  $(document).ready(function() {
+    $('.deleteUsuario').on('click', function() {
+        $('#borrarUsuario').modal('show');
+        $tr = $(this).closest('tr');
+
+        var datos = $tr.children("td").map(function() {
+            return $(this).text();
+        }).get();
+
+        console.log(datos);
+        $('#borrarUsuarioId').val(datos[0]);
+        $('#deleteidUsu').text(datos[1]);
+        $('#deleteNombreUsu').text(datos[2]);
+    })
+});

@@ -6,7 +6,7 @@
     #var_dump($filas);
     $proveedores = $obj->proveedoresTodos();
 ?>
-<div class="titulo-contenido shadow-sm"><h1 class="display-5">Materia Prima</h1></div>
+<div class="titulo-contenido shadow-sm"><h1 class="display-5">Registro de Materia Prima</h1></div>
 <div class="contenido-principal">
     
     <div class="encabezado-tabla">
