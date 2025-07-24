@@ -12,7 +12,7 @@ class modeloReportes {
         $resultados = [];
 
         // 1) Materias Primas Registradas
-        $sql1 = "SELECT COUNT(*) as total_materias_primas FROM materiaprima";
+        $sql1 = "SELECT COUNT(*) as total_materias_primas FROM materiaprima WHERE estado = 'activo'";
         $res1 = $this->PDO->query($sql1);
         $row1 = $res1->fetch(PDO::FETCH_ASSOC);
         $resultados['materias_primas'] = $row1['total_materias_primas'];
@@ -27,7 +27,7 @@ class modeloReportes {
         $resultados['pedidos_mes'] = $row2['total_pedidos_mes'];
 
         // 3) Proveedores registrados
-        $sql3 = "SELECT COUNT(*) as total_proveedores FROM proveedor";
+        $sql3 = "SELECT COUNT(*) as total_proveedores FROM proveedor WHERE estado = 'Activo'";
         $res3 = $this->PDO->query($sql3);
         $row3 = $res3->fetch(PDO::FETCH_ASSOC);
         $resultados['proveedores'] = $row3['total_proveedores'];

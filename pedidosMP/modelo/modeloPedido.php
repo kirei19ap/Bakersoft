@@ -15,7 +15,7 @@ class modeloPedido {
     }
 
     public function traerMPbyProveed($id_prove){
-        $consulta = $this->PDO->prepare("SELECT * FROM materiaprima WHERE proveedor = :id_prove");
+        $consulta = $this->PDO->prepare("SELECT * FROM materiaprima WHERE proveedor = :id_prove AND estado = 'activo'");
         $consulta->bindParam(":id_prove",$id_prove);
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
