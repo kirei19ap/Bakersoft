@@ -1,0 +1,115 @@
+/* ESTRC GENERAL  */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url(../img/Fondo.jpg);
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    position: relative;
+}
+
+/*  CONTENEDOR LOGIN */
+.login-box {
+    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    border-radius: 8px;
+    width: 350px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* IMPUTS */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
+
+    
+}
+
+/* BOTON */
+button,
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* LINK */
+a {
+    color: #333;
+    text-decoration: underline;
+    font-size: 0.9em;
+}
+
+/* LOGO */
+.logo {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+    height: auto;
+    border-radius: 100px;
+}
+
+
+
+/* RECCUPERACION  */
+
+/* ALERTA MSM */
+.alert {
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.alert.error {
+    background-color: #ffebee;
+    border-left: 4px solid #f44336;
+    color: #c62828;
+}
+
+.alert.success {
+    background-color: #e8f5e9;
+    border-left: 4px solid #4CAF50;
+    color: #2e7d32;
+}
+
+/* FORM DE RECCUPERACION */
+.login-box h2 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.login-box button {
+    background-color: #2196F3;
+}
+
+.login-box button:hover {
+    background-color: #0b7dda;
+}
+
+
+@media (max-width: 480px) {
+    .login-box {
+        width: 90%;
+        margin: 50px auto;
+        padding: 20px;
+    }
+}
