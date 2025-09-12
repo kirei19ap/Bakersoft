@@ -70,14 +70,20 @@ if (!isset($_SESSION['user'])) {
                 </li>
                 <li>
                     <a href="../../pedidosMP/vista/index.php">
-                        <ion-icon name="stats-chart-outline"></ion-icon>
+                        <ion-icon name="cart"></ion-icon>
                         <span>Pedidos de MP</span>
                     </a>
                 </li>
                 <li>
                     <a class="" href="../../buscador/vista/index.php">
-                        <ion-icon name="stats-chart-outline"></ion-icon>
+                        <ion-icon name="search"></ion-icon>
                         <span>Buscador</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="" href="../../reportes/vista/index.php">
+                        <ion-icon name="stats-chart-outline"></ion-icon>
+                        <span>Reportes y Estadísticas</span>
                     </a>
                 </li>
             </ul>
