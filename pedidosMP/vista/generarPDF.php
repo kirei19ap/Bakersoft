@@ -1,4 +1,8 @@
 <?php
+   session_start();
+   if(!isset($_SESSION['user'])){
+       header('Location: login.php');
+   }
 ob_start();
 require '../../vendor/autoload.php';
 require_once("../controlador/controladorPedido.php");

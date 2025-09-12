@@ -203,4 +203,8 @@ body{
 .barra-lateral .usuario ion-icon{
     font-size: 20px;
 }
-
+.dt-paging {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}

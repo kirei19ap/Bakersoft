@@ -49,7 +49,8 @@ ob_start();
             <th>Telefono</th>
             <th>Dirección</th>
             <th>Localidad</th>
-            <th>Proveincia</th>
+            <th>Provincia</th>
+            <th>Estado</th>
         </tr>
     </thead>
     <tbody>
@@ -61,6 +62,7 @@ ob_start();
             <td><?= $prov['calle']." ".$prov['altura'] ?></td>
             <td><?= $prov['localidad'] ?></td>
             <td><?= $prov['provincia'] ?></td>
+            <td><?= $prov['estado'] ?></td>
         <?php endforeach; ?>
         </tr>
     </tbody>

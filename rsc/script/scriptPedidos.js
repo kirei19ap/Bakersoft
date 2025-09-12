@@ -9,7 +9,7 @@ var table = new DataTable ('#Pedidos', {
       language: {
           decimal: ",",
           thousands: ".",
-          info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+          info: "Mostrando _END_ registros de un total de _TOTAL_",
           infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
           infoPostFix: "",
           infoFiltered: "(filtrado de un total de _MAX_ registros)",
@@ -30,7 +30,7 @@ var table = new DataTable ('#Pedidos', {
       order: [[0, "asc"]],
       searching: true,
       paging: true,
-      info: false,
+      info: true,
       autoWidth: false,
       responsive: true
   });

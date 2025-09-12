@@ -10,7 +10,7 @@
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>   
     <script src="https://cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap5.min.js"></script>
-    <script src="../../rsc/script/scriptUSU.js"></script>
+    <script src="/Bakersoft/rsc/script/scriptRoles.js"></script>
 
 </body>
 

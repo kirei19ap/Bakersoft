@@ -13,18 +13,29 @@ class modeloBuscador {
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
 
-    public function buscar($fecha = null, $proveedorId = null, $materiaId = null, $estado = null) {
-        $sql = "SELECT DISTINCT p.idPedido, p.fechaPedido, pr.nombre AS proveedor_nombre, e.descEstado AS estado 
-    FROM pedidomp p 
-    JOIN proveedor pr ON p.idProveedor = pr.id_proveedor 
-    JOIN estadospedidos e ON p.Estado = e.codEstado 
-    JOIN detallepedido dp ON p.idPedido = dp.idPedido 
-    WHERE 1 = 1";
-        $params = [];
+    public function buscar($fecha_desde = null, $fecha_hasta = null, $proveedorId = null, $materiaId = null, $estado = null) {
+        $sql = "SELECT DISTINCT 
+                p.idPedido, 
+                p.fechaPedido, 
+                pr.nombre AS proveedor_nombre, 
+                e.descEstado AS estado 
+                FROM pedidomp p 
+                JOIN proveedor pr ON p.idProveedor = pr.id_proveedor 
+                JOIN estadospedidos e ON p.Estado = e.codEstado 
+                JOIN detallepedido dp ON p.idPedido = dp.idPedido 
+                WHERE 1 = 1";
 
-        if ($fecha) {
-            $sql .= " AND p.fechaPedido = :fecha ";
-            $params[':fecha'] = $fecha;
+        $params = [];
+        $condiciones = [];
+
+        if ($fecha_desde) {
+            $sql .= " AND p.fechaPedido >= :fecha_desde";
+            $params[':fecha_desde'] = $fecha_desde;
+        }
+        
+        if ($fecha_hasta) {
+            $sql .= " AND p.fechaPedido <= :fecha_hasta";
+            $params[':fecha_hasta'] = $fecha_hasta;
         }
 
         if ($proveedorId) {
@@ -43,6 +54,7 @@ class modeloBuscador {
         }
 
         $sql .= " ORDER BY p.fechaPedido DESC";
+        #var_dump($sql);
         $stmt = $this->PDO->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

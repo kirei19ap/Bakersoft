@@ -2,7 +2,6 @@
     require_once("head/head.php");
     require_once("../controlador/controladorReportes.php");
     $obj = new controladorReportes();
-    
 ?>
 <div class="titulo-contenido shadow-sm">
     <h1 class="display-5">Reportes y Estadísticas</h1>
@@ -26,7 +25,7 @@
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm p-3 text-center">
-                    <h6 class="mb-2 text-secondary">Ítems Sin Stock</h6>
+                    <h6 class="mb-2 text-secondary">Materia Prima Sin Stock</h6>
                     <h3 class="fw-bold text-warning" id="sin_stock">0</h3>
                 </div>
             </div>
@@ -65,7 +64,7 @@
 
             <div class="col-md-6 mb-3 d-flex justify-content-center">
                 <a class="btn btn-success btn-lg px-5" href="reporte_proveedores.php" target="_blank">
-                    📄 Listado de Proveedores
+                    📄 Listado integral de Proveedores
                 </a>
             </div>
         </div>

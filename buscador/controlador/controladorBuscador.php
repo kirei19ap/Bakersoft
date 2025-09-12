@@ -11,11 +11,11 @@ class controladorBuscador{
     public function proveedoresTodos(){
         return ($this->modelo->traerProveedores() ? $this->modelo->traerProveedores() : false);
     }
-    public function buscar($fecha, $idproveedor, $materiaId, $estado) {
+    public function buscar($fecha_desde, $fecha_hasta, $idproveedor, $materiaId, $estado) {
         $pedidos = [];
 
-        if ($fecha || $idproveedor || $materiaId || $estado) {
-            $pedidos = $this->modelo->buscar($fecha, $idproveedor, $materiaId, $estado);
+        if ($fecha_desde || $fecha_hasta || $idproveedor || $materiaId || $estado) {
+            $pedidos = $this->modelo->buscar($fecha_desde, $fecha_hasta, $idproveedor, $materiaId, $estado);
             if ($pedidos){
                 return $pedidos;
             }
@@ -31,11 +31,11 @@ class controladorBuscador{
         return ($this->modelo->estadosTodos() ? $this->modelo->estadosTodos() : false);
     }
 
-    function hayFiltroValido($fecha, $proveedorId, $materiaId, $estado) {
+    function hayFiltroValido($fecha_desde, $fecha_hasta, $proveedorId, $materiaId, $estado) {
         // Para cada parámetro chequeamos que NO sea null y NO sea cadena vacía
-        // Esto acepta "0" como válido (porque "0" != "")
         return (
-            ($fecha !== null && $fecha !== '') ||
+            ($fecha_desde !== null && $fecha_desde !== '') ||
+            ($fecha_hasta !== null && $fecha_hasta !== '') ||
             ($proveedorId !== null && $proveedorId !== '') ||
             ($materiaId !== null && $materiaId !== '') ||
             ($estado !== null && $estado !== '')

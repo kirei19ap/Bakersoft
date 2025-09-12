@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // === GRAFICO 1: Materia prima por stock ===
             const ctxPie = document.getElementById('stockPie').getContext('2d');
             new Chart(ctxPie, {
-                type: 'pie',
+                type: 'bar',
                 data: {
-                    labels: ['Sobrestock', 'Stock Justo', 'Bajo Stock'],
+                    labels: ['Stock Elevado', 'Stock Optimo', 'Stock Crítico'],
                     datasets: [{
                         data: [
                             data.stock.sobrestock,
@@ -42,6 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         title: {
                             display: false,
                             text: 'Estado de Stock de Materias Primas'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cantidad'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Categoría de Stock'
                         }
                     }
                 }
@@ -57,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: {
                     labels: fechas,
                     datasets: [{
-                        label: 'Pedidos por Día',
+                        label: 'Cantidad de pedidos por Día',
                         data: cantidades,
                         fill: true,
                         borderColor: '#42a5f5',

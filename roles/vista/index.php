@@ -1,189 +1,169 @@
 <?php
-    include_once("head/head.php");
-    require_once("../controlador/controladorroles.php");
-    $obj = new controladorRoles();
-    $roles = $obj->mostrarTodos();
+include_once("head/head.php");
+require_once(__DIR__ . "/../../config/bd.php");
+$pdo = (new bd())->conexion();
+
+// Traer roles
+$roles = $pdo->query("
+  SELECT r.id_rol, r.nombre_rol, COUNT(u.id) AS cant_usuarios
+  FROM roles r
+  LEFT JOIN usuarios u ON u.rol = r.id_rol
+  GROUP BY r.id_rol, r.nombre_rol
+  ORDER BY r.nombre_rol
+")->fetchAll(PDO::FETCH_ASSOC);
+
+
+function e($v){ return htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8'); }
 ?>
 
 <div class="titulo-contenido shadow-sm">
-    <h1 class="display-5">Administración de Roles</h1>
+  <h1 class="display-5">Administración de Roles</h1>
 </div>
+
 <div class="contenido-principal">
 
-    <div class="encabezado-tabla">
-        <div>
-            <!-- <ion-icon name="add-outline"></ion-icon>
-            <a href="nuevo_empleado.php">Registrar Materia Prima</a> -->
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registrarUsuario">
-                Agregar Rol
-            </button>
-        </div>
+  <div class="encabezado-tabla d-flex justify-content-between align-items-center mb-2">
+    <div></div>
+    <div>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registrarRol">
+        Registrar Rol
+      </button>
     </div>
+  </div>
 
-<div class=""><?php
-        if (!empty($_SESSION['error_borra_proveedor'])):
-            $mensaje = $_SESSION['error_borra_proveedor'];
-            unset($_SESSION['error_borra_proveedor']);
-        ?>
-            <script>
-                console.log("<?php echo $mensaje; ?>");
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al eliminar',
-                    text: '<?php echo $mensaje; ?>',
-                    confirmButtonText: 'Aceptar'
-                });
-            </script>
-        <?php endif; ?>
+  <!-- Flash (SweetAlert) -->
+  <?php if (!empty($_SESSION['roles_msg'])): $msg = $_SESSION['roles_msg']; unset($_SESSION['roles_msg']); ?>
+    <script>
+      Swal.fire({ icon: 'success', title: 'OK', text: '<?= e($msg) ?>', confirmButtonText: 'Aceptar' });
+    </script>
+  <?php endif; ?>
+  <?php if (!empty($_SESSION['roles_err'])): $msg = $_SESSION['roles_err']; unset($_SESSION['roles_err']); ?>
+    <script>
+      Swal.fire({ icon: 'error', title: 'Atención', text: '<?= e($msg) ?>', confirmButtonText: 'Aceptar' });
+    </script>
+  <?php endif; ?>
+
+  <div class="contenido">
+    <div class="tabla-empleados">
+      <table id="Roles-lista" class="shadow-sm table table-striped table-hover table-bordered align-middle">
+        <thead class="thead-dark">
+          <tr class="text-center">
+            <th style="display:none">ID</th>
+            <th>Nombre del Rol</th>
+            <th class="text-center">Usuarios</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if ($roles): foreach ($roles as $r): ?>
+            <tr>
+              <td style="display:none"><?= (int)$r['id_rol'] ?></td>
+              <td><?= e($r['nombre_rol']) ?></td>
+              <td class="text-center"><?= (int)$r['cant_usuarios'] ?></td>
+              <td class="text-center">
+                <button class="btn btn-success verRol" title="Ver"><ion-icon name="eye-outline"></ion-icon></button>
+                <button class="btn btn-primary editRol" title="Editar"><ion-icon name="create-outline"></ion-icon></button>
+                <button class="btn btn-danger deleteRol" title="Eliminar"><ion-icon name="trash-outline"></ion-icon></button>
+              </td>
+            </tr>
+          <?php endforeach; else: ?>
+            <tr><td colspan="4" class="text-center">No existen roles para mostrar</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<!-- Modal Registrar Rol-->
-<div class="modal fade" id="registrarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Usuario</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formUsu" action="crearUsuario.php" method="post">
-                        <div class="mb-3">
-                            <label for="usuario" class="form-label">Usuario</label>
-                            <input type="text" required class="form-control" name="usuario" id="usuario">
-                        </div>
-                        <div class="mb-3 ">
-                            <div class="row">
-                            <div class="col">
-                                <label for="nombre_usu" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" name="nombre_usu" id="nombre_usu">
-                            </div>
-                            <div class="col">
-                                <label for="apellido_usu" class="form-label">Apellido</label>
-                                <input type="text" class="form-control" name="apellido_usu" id="apellido_usu">
-                            </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                        <label for="rol" class="form-label">Rol</label>
-                            <select class="form-select" name="rol" id="rol" required>
-                                <option value=""></option>
-                                <?php
-                                    foreach ($roles as $rol) {
-                                ?>
-                                <option value="<?php echo $rol['id_rol']; ?>">
-                                    <?php echo $rol['nombre_rol']; ?></option>
-                                <?php
-                                }
-                                ?>
-                            </select>
-                            
-                        </div>
-                        <div class="mb-3">
-                            <label for="contrasena" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="contrasena" id="contrasena" required></select>
-                            <div class="invalid-feedback">La contraseña es obligatoria.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contrasena_conf" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" name="contrasena_conf" id="contrasena_conf" required>
-                            <div class="invalid-feedback" id="passMismatchFeedback">Las contraseñas deben coincidir.</div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<!-- Modal: Registrar Rol -->
+<div class="modal fade" id="registrarRol" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="crearRol.php" method="post" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Registrar Rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-    </div>
-
-<!-- Modal Warning previo a borrar -->
-<div class="modal" id="borrarUsuario" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Eliminar Proveedor</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="borraUsuario.php" method="post">
-                    <input type="text" hidden name="borrarUsuarioId" id="borrarUsuarioId">
-                    <div class="modal-body">
-                        <p>Esta seguro que desea eliminar el siguiente usuario?</p>
-                        <div class="table-responsive">
-                            <table class="table table-primary">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Usuario</th>
-                                        <th scope="col">Nombre y Apellido</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="">
-                                        <td name="deleteidUsu" id="deleteidUsu" scope="row"></td>
-                                        <td name="deleteNombreUsu" id="deleteNombreUsu" scope="row"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Eliminar</button>
-                    </div>
-                </form>
-            </div>
+        <div class="modal-body">
+          <label class="form-label">Nombre del rol</label>
+          <input type="text" class="form-control" name="nombre_rol" id="new_nombre_rol" required>
+          <div class="invalid-feedback">El nombre es obligatorio.</div>
         </div>
-    </div>
-
-<div class="contenido">
-        <div class="tabla-empleados">
-            <table id="Usuarios-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                <thead class="thead-dark">
-                    <tr class="text-center">
-                        <th scope="col">ID</th>
-                        <th scope="col">Rol</th>
-                        <th scope="col">Acciones</th>
-
-                    </tr>
-                </thead>
-                <tbody id="empleados-lista">
-                    <!-- Aquí se llena la tabla con los roles -->
-
-                    <?php if($roles): ?>
-                    <?php foreach ($roles as $rol){?>
-                    <tr>
-                        <td><?php echo $rol['id_rol'];?></td>
-                        <td><?php echo $rol['nombre_rol'];?></td>
-                                                
-                        <td class="text-center">
-                            <button class="btn btn-success verbtnproveed" title="Consultar Usuario">
-                                <ion-icon name="eye-outline"></ion-icon>
-                            </button>
-                            <button class="btn btn-primary editbtnproveed" title="Editar Usuario">
-                                <ion-icon name="create-outline"></ion-icon>
-                            </button>
-                            <button class="btn btn-danger deleteUsuario" title="Eliminar Usuario">
-                                <ion-icon name="trash-outline"></ion-icon>
-                            </button>
-                        </td>
-                        <?php }  ?>
-                        <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="text-center">No existen roles para mostrar</td>
-                    </tr>
-                    <?php endif; ?>
-
-                </tbody>
-            </table>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button class="btn btn-primary" type="submit">Guardar</button>
         </div>
-
+      </form>
     </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Rol -->
+<div class="modal fade" id="editarRol" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="modificarRol.php" method="post" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_rol" id="edit_idrol">
+          <label class="form-label">Nombre del rol</label>
+          <input type="text" class="form-control" name="nombre_rol" id="edit_nombrerol" required>
+          <div class="invalid-feedback">El nombre es obligatorio.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button class="btn btn-primary" type="submit">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ver Rol -->
+<div class="modal fade" id="verRol" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rol</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Nombre del rol</label>
+        <input id="ver_nombrerol" class="form-control" readonly>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Borrar Rol -->
+<div class="modal fade" id="borrarRol" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="borraRol.php" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Eliminar Rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_rol" id="del_idrol">
+          <p>¿Confirmás eliminar el rol <b id="del_nombrerol"></b>?</p>
+          <small class="text-muted d-block">No se podrá eliminar si hay usuarios con este rol.</small>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-danger" type="submit">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
-<?php 
-    include_once("foot/foot.php");
 
-?>
+<?php include_once("foot/foot.php"); ?>

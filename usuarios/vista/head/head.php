@@ -71,7 +71,7 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="reportesUsuario.php">
                         <ion-icon name="stats-chart-outline"></ion-icon>
                         <span>Reportes</span>
                     </a>

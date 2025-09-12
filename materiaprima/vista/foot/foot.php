@@ -15,6 +15,7 @@
 
     
     <script src="../../rsc/script/scriptMP.js"></script>
+    <script> const categorias = <?php echo json_encode($cat); ?>; </script>
 </body>
 
 </html>

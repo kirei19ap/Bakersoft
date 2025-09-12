@@ -8,7 +8,10 @@ class modeloUsuario{
         $this->PDO = $con->conexion();
     }
     public function listarTodos(){
-        $consulta = $this->PDO->prepare("SELECT * FROM usuarios");
+        $consulta = $this->PDO->prepare("SELECT id, usuario, nomyapellido, rol, fecha_creacion, estado
+FROM usuarios
+WHERE eliminado = 0
+ORDER BY id ASC");
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
 
@@ -29,7 +32,7 @@ class modeloUsuario{
     }
 
     public function deleteUSR($id_usuario){
-        $consulta = $this->PDO->prepare("DELETE FROM usuarios WHERE id = :id");
+        $consulta = $this->PDO->prepare("UPDATE usuarios SET eliminado=1, estado='Inactivo', fecha_baja = NOW() WHERE id=:id");
         $consulta->bindParam(":id",$id_usuario);
         return ($consulta->execute()) ? true : false ;
     }

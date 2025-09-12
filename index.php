@@ -5,7 +5,7 @@ $userSesion = new usrControlador(); #Inicia la sesion
 
 
 if(isset($SESSION['user'])){
-    echo "hay sesion";
+    #echo "hay sesion";
     #$userSesion->setCurrentUser($SESSION['user']);
     #include_once("menuprincipal/MenuPrincipal.php");
 
@@ -27,6 +27,10 @@ if(isset($SESSION['user'])){
         }else if($datosUsuario[0]['nombre_rol'] == "Encargado Produccion"){
             include_once("menuprincipal/MenuPrincipalMP.php");
             
+        }else if($datosUsuario[0]['nombre_rol'] == "Encargado RRHH"){
+            include_once("menuprincipal/MenuPrincipalEMP.php");
+        }else if ($datosUsuario[0]['nombre_rol'] == "Empleado"){
+            include_once("menuprincipal/MenuPrincipalGRAL.php");
         }
         #echo $_SESSION['usuario'];
         #echo $_SESSION['nomyapellido'];
@@ -36,7 +40,7 @@ if(isset($SESSION['user'])){
         #include_once("menuprincipal/MenuPrincipalMP.php"); /*Carga el menu principal*/
     }else{
         #echo "Nombre de usario y/o contraseña incorrecto.";
-        $errorLogin = "Nombre de usuario y/o contraseña incorrecto.";
+        $errorLogin = "Nombre de usuario y/o contraseña incorrecto. O su usuario se encuentra inactivo.";
         include_once("login/vista/login.php");
     }
 }else{

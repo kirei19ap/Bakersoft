@@ -9,7 +9,7 @@ class modeloProveedor {
     }
     public function insertar($nombre, $calle, $altura, $provincia, $localidad, $email, $telefono){
         
-        $consulta = $this->PDO->prepare("INSERT INTO proveedor (`id_proveedor`, `nombre`, `email`, `telefono`, `calle`, `altura`, `provincia`, `localidad`) VALUES (NULL, '$nombre', '$email', '$telefono', '$calle', '$altura', '$provincia', '$localidad')");      
+        $consulta = $this->PDO->prepare("INSERT INTO proveedor (`id_proveedor`, `nombre`, `email`, `telefono`, `calle`, `altura`, `provincia`, `localidad`, `Estado`) VALUES (NULL, '$nombre', '$email', '$telefono', '$calle', '$altura', '$provincia', '$localidad', 'Activo')");      
 
         return ($consulta->execute()) ? $this->PDO->lastInsertId() : false;
 
@@ -33,7 +33,9 @@ class modeloProveedor {
 
     public function delete ($id){
         try{
-            $consulta = $this->PDO->prepare("DELETE FROM proveedor WHERE id_proveedor = :id");
+            #$consulta = $this->PDO->prepare("DELETE FROM proveedor WHERE id_proveedor = :id");
+            $consulta = $this->PDO->prepare("UPDATE proveedor SET estado = :estado WHERE id_proveedor = :id");
+            $consulta->bindValue(":estado", "Inactivo");
             $consulta->bindParam(":id",$id);
             $resultado = $consulta->execute();
             return $resultado;
@@ -46,21 +48,18 @@ class modeloProveedor {
                 return "ERROR_GENERAL";
             }
         }
-        
-
-
-
-
         return ($consulta->execute()) ? true : false ;
     }
 
     public function listarTodos(){
-        $consulta = $this->PDO->prepare("SELECT * FROM proveedor");
+        $consulta = $this->PDO->prepare("SELECT * FROM proveedor WHERE estado = :estado");
+        $consulta->bindValue(":estado", "Activo");
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
 
     public function consultarProveedor($nombre){
-        $consulta = $this->PDO->prepare("SELECT * FROM proveedor WHERE nombre = :nombre");
+        $consulta = $this->PDO->prepare("SELECT * FROM proveedor WHERE nombre = :nombre AND estado = :estado");
+        $consulta->bindValue(":estado", "Activo");
         $consulta->bindParam(":nombre",$nombre);
         $consulta->execute();
         if($consulta->rowCount() > 0){
@@ -82,8 +81,4 @@ class modeloProveedor {
     }
     
 }
-
-
-
-
 ?>

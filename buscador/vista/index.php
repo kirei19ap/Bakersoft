@@ -7,13 +7,14 @@
     $estados = $ctrl->obtenerEstados();
     $pedidos = [];
 
-    $fecha = $_GET['fecha'] ?? null;
+    $fecha_desde = $_GET['fecha_desde'] ?? null;
+    $fecha_hasta = $_GET['fecha_hasta'] ?? null;
     $proveedorId = $_GET['proveedor'] ?? null;
     $materiaId = $_GET['materia'] ?? null;
     $estado = $_GET['estado'] ?? null;
 
-    if ($ctrl->hayFiltroValido($fecha, $proveedorId, $materiaId, $estado)) {
-        $pedidos = $ctrl->buscar($fecha, $proveedorId, $materiaId, $estado);
+    if ($ctrl->hayFiltroValido($fecha_desde, $fecha_hasta, $proveedorId, $materiaId, $estado)) {
+        $pedidos = $ctrl->buscar($fecha_desde, $fecha_hasta, $proveedorId, $materiaId, $estado);
     }
 ?>
 
@@ -35,10 +36,16 @@
     <h1>Buscar Pedidos</h1>
 
     <form method="GET" action="" class="form-busqueda">
+
         <div class="form-group">
-            <label for="fecha">Fecha del Pedido:</label>
-            <input type="date" name="fecha" id="fecha" value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
-        </div>
+    <label for="fecha_desde">Fecha Desde:</label>
+    <input type="date" name="fecha_desde" id="fecha_desde" value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
+</div>
+
+<div class="form-group">
+    <label for="fecha_hasta">Fecha Hasta:</label>
+    <input type="date" name="fecha_hasta" id="fecha_hasta" value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
+</div>
 
         <div class="form-group">
             <label for="proveedor">Proveedor:</label>
@@ -109,7 +116,7 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <?php elseif ($fecha || $proveedorId): ?>
+        <?php elseif ($fecha_desde || $fecha_hasta || $proveedorId): ?>
         <p>No se encontraron pedidos con esos criterios.</p>
         <?php endif; ?>
 

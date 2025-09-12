@@ -1,115 +1,122 @@
 
-$(document).ready(function() {
-    $('.editbtnproveed').on('click', function() {
-        $('#editarProveedor').modal('show');
-        $tr = $(this).closest('tr');
+$(document).on('click', '#Provedores-lista tbody .editbtnproveed', function () {
+    $('#editarProveedor').modal('show');
 
-        var datos = $tr.children("td").map(function() {
-            return $(this).text();
-        }).get();
+    // Si la fila es "child" por responsive, subir a la anterior
+    let $tr = $(this).closest('tr');
+    if ($tr.hasClass('child')) $tr = $tr.prev();
 
-        console.log(datos);
+    var datos = $tr.children("td").map(function() {
+        return $(this).text();
+    }).get();
 
-        $('#editidProve').val(datos[0]);
-        $('#editnombreProve').val(datos[1]);
-        let direccion = datos[2].trim(); // Ej: "Av. Siempre Viva 742"
+    console.log(datos);
 
-        let ultimoEspacio = direccion.lastIndexOf(" ");
-        if (ultimoEspacio !== -1) {
-        let calle = direccion.substring(0, ultimoEspacio).trim();
+    $('#editidProve').val(datos[0]);
+    $('#editnombreProve').val(datos[1]);
+
+    // Dirección: "Calle Número"
+    let direccion = (datos[2] || '').trim();
+    let ultimoEspacio = direccion.lastIndexOf(" ");
+    if (ultimoEspacio !== -1) {
+        let calle  = direccion.substring(0, ultimoEspacio).trim();
         let numero = direccion.substring(ultimoEspacio + 1).trim();
         $('#editcalleprove').val(calle);
         $('#editalturaprove').val(numero);
-        } else {
-        // Si no hay espacio, asumimos que no hay número
-        $('#editcalleProve').val(direccion);
+    } else {
+        // FIX: el id correcto es #editcalleprove (todo minúsculas)
+        $('#editcalleprove').val(direccion); // <--- ARREGLO de ID
         $('#editalturaprove').val('');
-        }
-        $('#editemailProve').val(datos[3]);
-        $('#edittelefonoProve').val(datos[4]);
-        $('#editprovProve').val(datos[6].toString().trim());
-        
-        let idLocalidad = datos[5].toString().trim();
-        var xhttp = new XMLHttpRequest();
+    }
 
-        xhttp.onreadystatechange = function() {
+    $('#editemailProve').val(datos[3]);
+    $('#edittelefonoProve').val(datos[4]);
+
+    // Provincia (col 6) e inicializar localidades vía AJAX
+    let idProvincia  = (datos[6] || '').toString().trim();
+    let idLocalidad  = (datos[5] || '').toString().trim();
+    $('#editprovProve').val(idProvincia);
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             let ownCities = JSON.parse(this.responseText);
-
             let cityDropdown = document.getElementById('editlocprove');
-            cityDropdown.innerText = null;
+            cityDropdown.innerText = ''; // limpiar
 
             ownCities.forEach(function (c) {
                 var option = document.createElement('option');
-                option.text = c.localidad;
+                option.text  = c.localidad;
                 option.value = c.id_localidad;
-                if (c.id_localidad == idLocalidad) {
+                if (String(c.id_localidad) == String(idLocalidad)) {
                     option.selected = true;
-                  }
+                }
                 cityDropdown.appendChild(option);
             });
         }
-    }; 
-    xhttp.open("GET", "../controlador/traerLocalidades.php?id_provincia=" + datos[6].toString(), true);
+    };
+    xhttp.open("GET", "../controlador/traerLocalidades.php?id_provincia=" + idProvincia, true);
     xhttp.send();
-    })
 });
 
-$(document).ready(function() {
-    $('.verbtnproveed').on('click', function() {
-        $('#verProveedor').modal('show');
-        $tr = $(this).closest('tr');
+// Delegación para Ver
+$(document).on('click', '#Provedores-lista tbody .verbtnproveed', function () {
+    $('#verProveedor').modal('show');
 
-        var datos = $tr.children("td").map(function() {
-            return $(this).text();
-        }).get();
+    let $tr = $(this).closest('tr');
+    if ($tr.hasClass('child')) $tr = $tr.prev();
 
-        console.log(datos);
+    var datos = $tr.children("td").map(function() {
+        return $(this).text();
+    }).get();
 
-        $('#veridProve').val(datos[0]);
-        $('#vernombreProve').val(datos[1]);
-        let direccion = datos[2].trim(); // Ej: "Av. Siempre Viva 742"
+    console.log(datos);
 
-        let ultimoEspacio = direccion.lastIndexOf(" ");
-        if (ultimoEspacio !== -1) {
-        let calle = direccion.substring(0, ultimoEspacio).trim();
+    $('#veridProve').val(datos[0]);
+    $('#vernombreProve').val(datos[1]);
+
+    let direccion = (datos[2] || '').trim();
+    let ultimoEspacio = direccion.lastIndexOf(" ");
+    if (ultimoEspacio !== -1) {
+        let calle  = direccion.substring(0, ultimoEspacio).trim();
         let numero = direccion.substring(ultimoEspacio + 1).trim();
         $('#vercalleprove').val(calle);
         $('#veralturaprove').val(numero);
-        } else {
-        // Si no hay espacio, asumimos que no hay número
+    } else {
         $('#vercalleprove').val(direccion);
         $('#veralturaprove').val('');
-        }
-        $('#veremailProve').val(datos[3]);
-        $('#vertelefonoProve').val(datos[4]);
-        $('#verprovProve').val(datos[6].toString().trim());
-        
-        let idLocalidad = datos[5].toString().trim();
-        var xhttp = new XMLHttpRequest();
+    }
 
-        xhttp.onreadystatechange = function() {
+    $('#veremailProve').val(datos[3]);
+    $('#vertelefonoProve').val(datos[4]);
+
+    // Provincia / Localidad
+    let idProvincia = (datos[6] || '').toString().trim();
+    let idLocalidad = (datos[5] || '').toString().trim();
+    $('#verprovProve').val(idProvincia);
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             let ownCities = JSON.parse(this.responseText);
-
             let cityDropdown = document.getElementById('verlocprove');
-            cityDropdown.innerText = null;
+            cityDropdown.innerText = ''; // limpiar
 
             ownCities.forEach(function (c) {
                 var option = document.createElement('option');
-                option.text = c.localidad;
+                option.text  = c.localidad;
                 option.value = c.id_localidad;
-                if (c.id_localidad == idLocalidad) {
+                if (String(c.id_localidad) == String(idLocalidad)) {
                     option.selected = true;
-                  }
+                }
                 cityDropdown.appendChild(option);
             });
         }
-    }; 
-    xhttp.open("GET", "../controlador/traerLocalidades.php?id_provincia=" + datos[6].toString(), true);
+    };
+    xhttp.open("GET", "../controlador/traerLocalidades.php?id_provincia=" + idProvincia, true);
     xhttp.send();
-    })
 });
+
 
 //Esta funcion actualiza el select de localidades dentro del modal
 
@@ -135,29 +142,31 @@ document.getElementById('editprovProve').addEventListener('change', function(e) 
     xhttp.send();
 });
 
-$(document).ready(function() {
-    $('.deletebtnProveed').on('click', function() {
-        $('#borrarProveedor').modal('show');
-        $tr = $(this).closest('tr');
+// Delegación para Eliminar
+$(document).on('click', '#Provedores-lista tbody .deletebtnProveed', function () {
+    $('#borrarProveedor').modal('show');
 
-        var datos = $tr.children("td").map(function() {
-            return $(this).text();
-        }).get();
+    let $tr = $(this).closest('tr');
+    if ($tr.hasClass('child')) $tr = $tr.prev();
 
-        console.log(datos);
-        $('#deleteidProve').text(datos[0]);
-        $('#borrarProveedorId').val(datos[0]);
-        $('#deleteNombreProve').text(datos[1]);
-        $('#deletestemailProve').text(datos[3]);
-        $('#deletetelefProve').text(datos[4]);
-    })
+    var datos = $tr.children("td").map(function() {
+        return $(this).text();
+    }).get();
+
+    console.log(datos);
+    $('#deleteidProve').text(datos[0]);
+    $('#borrarProveedorId').val(datos[0]);
+    $('#deleteNombreProve').text(datos[1]);
+    $('#deletestemailProve').text(datos[3]);
+    $('#deletetelefProve').text(datos[4]);
 });
+
 
 var table = new DataTable('#Provedores-lista', {
     language: {
     "decimal": ",",
     "thousands": ".",
-    "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+    "info": "Mostrando _END_ registros de un total de _TOTAL_",
     "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
     "infoPostFix": "",
     "infoFiltered": "(filtrado de un total de _MAX_ registros)",
@@ -167,7 +176,7 @@ var table = new DataTable('#Provedores-lista', {
         "first": "<<",
         "last": ">>",
         "next": ">",
-        "previous": ">"
+        "previous": "<"
     },
     "search": "Buscador:",
     "searchPlaceholder": "Buscar...",
@@ -179,7 +188,7 @@ var table = new DataTable('#Provedores-lista', {
     "order": [[0, "asc"]],
     "searching": true,
     "paging": true,
-    "info": false,
+    "info": true,
     "autoWidth": false,
     "responsive": true
 });

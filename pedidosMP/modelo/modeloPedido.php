@@ -9,12 +9,13 @@ class modeloPedido {
     }
     
     public function traerProveedores(){
-        $consulta = $this->PDO->prepare("SELECT * FROM proveedor");
+        $consulta = $this->PDO->prepare("SELECT * FROM proveedor WHERE estado = :estado");
+        $consulta->bindValue(":estado", "Activo");
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }
 
     public function traerMPbyProveed($id_prove){
-        $consulta = $this->PDO->prepare("SELECT * FROM materiaprima WHERE proveedor = :id_prove");
+        $consulta = $this->PDO->prepare("SELECT * FROM materiaprima WHERE proveedor = :id_prove AND estado = 'activo'");
         $consulta->bindParam(":id_prove",$id_prove);
         return ($consulta->execute()) ? $consulta->fetchAll() : false;
     }

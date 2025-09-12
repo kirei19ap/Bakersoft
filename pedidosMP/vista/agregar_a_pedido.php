@@ -1,6 +1,8 @@
 <?php
 session_start();
-
+if(!isset($_SESSION['user'])){
+    header('Location: login.php');
+}
 // Validar y sanitizar entrada
 $id = $_POST['id'] ?? null;
 $nombre = $_POST['nombre'] ?? '';

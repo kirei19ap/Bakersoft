@@ -11,7 +11,7 @@ class controladorProveedor{
         #validar que no exite una materia prima con el mismo nombre
         $consulta = $this->modelo->consultarProveedor($nombre);
         if($consulta != false){
-            $_SESSION['error_valida_proveedor'] ="Ya existe un proveedor registrado con ese nombre, intente nuevamente con otro nombre o edite el registro correspondiente.";
+            $_SESSION['error_valida_proveedor'] ="Ya existe un proveedor activo registrado con ese nombre, intente nuevamente con otro nombre o edite el registro correspondiente.";
             header("Location:index.php"); 
             exit;
         }else{

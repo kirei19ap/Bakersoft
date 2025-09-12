@@ -15,7 +15,7 @@ class usrModelo extends bd{
     public function existeUsuario($user, $contrasena){
         $db = new bd(); // Crear una instancia de la clase bd
         $md5pass = md5($contrasena);
-        $sql = $db->conexion()->prepare("SELECT * FROM usuarios WHERE usuario = :id_usuario AND contrasena = :contrasena");
+        $sql = $db->conexion()->prepare("SELECT * FROM usuarios WHERE usuario = :id_usuario AND contrasena = :contrasena AND estado='Activo' AND eliminado=0");
         $sql->bindParam(":id_usuario", $user, PDO::PARAM_STR);
         $sql->bindParam(":contrasena", $md5pass, PDO::PARAM_STR);
         $sql->execute();
