@@ -1,10 +1,10 @@
 <?php
-session_start();
-// Verificar si el usuario está logueado
-if (!isset($_SESSION['user'])) {
-     //Si no está logueado, redirigir al login
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== "Admin RRHH") { // Encargado RRHH
     header('Location: ../../index.php');
-    exit();
+    exit;
 }
 
 ?>
@@ -57,7 +57,7 @@ if (!isset($_SESSION['user'])) {
         <nav class="navegacion">
             <ul>
                 <li>
-                    <a class="active" href="index.php">
+                    <a class="" href="index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Empleados</span>
                     </a>
@@ -69,7 +69,7 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li>
-                    <a class="" href="buscador.php">
+                    <a class="active" href="buscador.php">
                         <ion-icon name="search"></ion-icon>
                         <span>Buscador</span>
                     </a>

@@ -1,10 +1,10 @@
 <?php
-session_start();
-// Verificar si el usuario está logueado
-if (!isset($_SESSION['user'])) {
-     //Si no está logueado, redirigir al login
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== "Admin RRHH") { // Encargado RRHH
     header('Location: ../../index.php');
-    exit();
+    exit;
 }
 
 ?>
@@ -23,7 +23,48 @@ if (!isset($_SESSION['user'])) {
     <link rel="stylesheet" href="../../rsc/estilos/contenido.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .chart-card {
+            min-height: 420px;
+            /* alto uniforme */
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
 
+        .chart-card .card-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Barras: que ocupen todo el alto disponible */
+        canvas.chart-bar {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Tortas: limitar tamaño máximo para que no queden gigantes */
+        canvas.chart-pie {
+            max-width: 340px !important;
+            /* ajustá 320–380 según te guste */
+            max-height: 340px !important;
+            width: 100% !important;
+            height: auto !important;
+            /* mantiene proporción */
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .card h6 {
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+    </style>
 
 </head>
 
@@ -57,7 +98,7 @@ if (!isset($_SESSION['user'])) {
         <nav class="navegacion">
             <ul>
                 <li>
-                    <a class="active" href="index.php">
+                    <a class="" href="index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Empleados</span>
                     </a>
@@ -75,7 +116,7 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li>
-                    <a class="" href="estadisticas.php">
+                    <a class="active" href="estadisticas.php">
                         <ion-icon name="stats-chart-outline"></ion-icon>
                         <span>Reportes y Estadísticas</span>
                     </a>

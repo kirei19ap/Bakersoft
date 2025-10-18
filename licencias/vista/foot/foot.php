@@ -8,13 +8,13 @@
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap5.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="../../rsc/script/scriptEmpleado.js"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap5.min.js"></script>
+    
 
 
+    
+    
 </body>
 
 </html>

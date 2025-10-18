@@ -9,11 +9,14 @@ if (!isset($_SESSION['user'])) {
 
 require_once(__DIR__."/../controlador/controladoradmempleado.php");
 $obj = new ControladorAdmEmpleado();
-$_POST['id_empleado'] = (int)($_POST['id_empleado'] ?? 0);
-$res = $obj->actualizar($_POST);
-if ($res === false && !empty($_SESSION['flash_error'])) {
-    header("Location: index.php");
-    exit;
+$id = (int)($_POST['id_empleado'] ?? 0);
+if ($id > 0) {
+    $ok = $obj->toggle($id);
+    if ($ok) {
+        $_SESSION['flash_success'] = "Estado actualizado correctamente.";
+    } else {
+        $_SESSION['flash_error'] = "No se pudo actualizar el estado del empleado.";
+    }
 }
-$_SESSION['flash_success'] = "Empleado actualizado correctamente.";
 header("Location: index.php");
+?>
