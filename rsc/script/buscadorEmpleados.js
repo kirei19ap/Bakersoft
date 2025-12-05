@@ -197,6 +197,7 @@
         { data: 'fecha_alta' },
         {
           data: null, orderable: false, searchable: false,
+          className: 'text-center',
           render: function (row) {
             return `
             <div class="btn-group btn-group-sm" role="group">

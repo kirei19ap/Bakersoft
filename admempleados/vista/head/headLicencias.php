@@ -25,6 +25,7 @@ if (!isset($_SESSION['user'])) {
     <link rel="stylesheet" href="../../rsc/estilos/style.css">
     <link rel="stylesheet" href="../../rsc/estilos/contenido.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    
 
 
@@ -80,7 +81,13 @@ if (!isset($_SESSION['user'])) {
                 <li>
                     <a class="" href="estadisticas.php">
                         <ion-icon name="stats-chart-outline"></ion-icon>
-                        <span>Reportes y Estadísticas</span>
+                        <span>Estadísticas</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="" href="reportes.php">
+                        <ion-icon name="stats-chart-outline"></ion-icon>
+                        <span>Reportes</span>
                     </a>
                 </li>
             </ul>

@@ -4,5 +4,5 @@
     $useSession = new usrControlador(); // Creamos una instancia del controlador
     $useSession->cerrarSesion(); // Llamamos al método para cerrar sesión
 
-    header("Location: ../../index.php");
+    header("Location: /bakersoft/index.php");
 ?>

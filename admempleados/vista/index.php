@@ -1,5 +1,5 @@
 <?php
-include_once("head/head.php");
+include_once("../../includes/head_app.php");
 
 require_once(__DIR__ . "/../controlador/controladoradmempleado.php");
 $obj = new ControladorAdmEmpleado();
@@ -85,7 +85,7 @@ $locMap = $obj->localidadesMap(); // id_localidad => nombre
                         <th>Apellido, Nombre</th>
                         <th>DNI</th>
                         <th>Legajo</th>
-                        <th>Sexo</th>
+                        <th>Genero</th>
                         <th>Puesto</th>
                         <th>Fecha ingreso</th>
                         <th>Estado</th>

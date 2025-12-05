@@ -171,7 +171,7 @@ var table = new DataTable('#Provedores-lista', {
     "infoPostFix": "",
     "infoFiltered": "(filtrado de un total de _MAX_ registros)",
     "loadingRecords": "Cargando...",
-    "lengthMenu": "Mostrar _MENU_ registros",
+    "lengthMenu": "Mostrar _MENU_ ",
     "paginate": {
         "first": "<<",
         "last": ">>",

@@ -1,5 +1,5 @@
 <?php
-include_once("head/head.php");
+include_once("../../includes/head_app.php");
 require_once(__DIR__ . "/../../config/bd.php");
 $pdo = (new bd())->conexion();
 

@@ -1,5 +1,5 @@
 <?php
-    include_once("head/head.php");
+    include_once("../../includes/head_app.php");
     require_once("../controlador/controladorBuscador.php");
     $ctrl = new controladorBuscador();
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

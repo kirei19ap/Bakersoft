@@ -1,5 +1,6 @@
 <?php
-include_once("head/head.php");
+$currentPage = 'materiaprima';
+include_once("../../includes/head_app.php");
 require_once("../controlador/controladorMP.php");
 $obj = new controladorMP();
 $filas = $obj->mostrarTodos();
@@ -7,6 +8,8 @@ $cat = $obj->traerCategorias();
 #var_dump($filas);
 #var_dump($cat);
 $proveedores = $obj->proveedoresTodos();
+
+
 ?>
 <div class="titulo-contenido shadow-sm">
     <h1 class="display-5">Registro de Materia Prima</h1>
@@ -361,68 +364,71 @@ $proveedores = $obj->proveedoresTodos();
     </div>
 
     <div class="contenido">
-        <div class="tabla-empleados">
-            <table id="MP-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                <thead class="thead-dark">
-                    <tr class="text-center">
-                        <th hidden scope="col">ID</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Stock Mínimo</th>
-                        <th scope="col">Stock Actual</th>
-                        <th scope="col">Proveedor</th>
-                        <th style="display:none" scope="col">ID Proveedor</th>
-                        <th style="display:none" scope="col">Categoria</th>
-                        <th style="display:none" scope="col">No Perecedero</th>
-                        <th style="display:none" scope="col">Fecha Vencimiento</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se llena la tabla con las materias primas -->
-
-                    <?php if ($filas): ?>
-                        <?php foreach ($filas as $regmp) { ?>
-                            <tr>
-                                <td hidden><?php echo $regmp['id']; ?></td>
-                                <td><?php echo $regmp['nombre']; ?></td>
-                                <td><?php echo $regmp['stockminimo'] . ' ' . $regmp['unidad_medida']; ?></td>
-                                <td style="background-color: <?php if ($regmp['stockactual'] < $regmp['stockminimo']) {
-                                                                    echo "#f55f5f";
-                                                                } else if ($regmp['stockactual'] == $regmp['stockminimo']) {
-                                                                    echo "#ffff80";
-                                                                } else {
-                                                                    echo "#a5d46a";
-                                                                }
-                                                                ?>"><?php echo $regmp['stockactual'] . ' ' . $regmp['unidad_medida']; ?></td>
-                                <td><?php $prove = $obj->consultaProveedor($regmp['proveedor']);
-                                    echo $prove[0]['nombre'];
-                                    ?></td>
-                                <td style="display:none"><?php echo $prove[0]['id_proveedor'] ?></td>
-                                <td style="display:none"><?php echo $regmp['categoriaMP']; ?>
-                                <td style="display:none"><?php echo isset($regmp['es_perecedero']) ? $regmp['es_perecedero'] : 1; ?></td>
-                                <td style="display:none"><?php echo !empty($regmp['fecha_vencimiento']) ? $regmp['fecha_vencimiento'] : ''; ?></td>
-                                <td class="text-center">
-                                    <button class="btn btn-success verMPbtn" title="Consultar Materia Prima">
-                                        <ion-icon name="eye-outline"></ion-icon>
-                                    </button>
-                                    <button class="btn btn-primary editbtn" title="Editar Materia Prima">
-                                        <ion-icon name="create-outline"></ion-icon>
-                                    </button>
-                                    <button class="btn btn-danger deletebtn" title="Eliminar Materia Prima">
-                                        <ion-icon name="trash-outline"></ion-icon>
-                                    </button>
-                                </td>
-                            <?php }  ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="5" class="text-center">No existen registros para mostrar</td>
+        <div class="card">
+            <div class="card-body">
+                <div class="tabla-empleados">
+                    <table id="MP-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                        <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th hidden scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Stock Mínimo</th>
+                                <th scope="col">Stock Actual</th>
+                                <th scope="col">Proveedor</th>
+                                <th style="display:none" scope="col">ID Proveedor</th>
+                                <th style="display:none" scope="col">Categoria</th>
+                                <th style="display:none" scope="col">No Perecedero</th>
+                                <th style="display:none" scope="col">Fecha Vencimiento</th>
+                                <th scope="col">Acciones</th>
                             </tr>
-                        <?php endif; ?>
+                        </thead>
+                        <tbody>
+                            <!-- Aquí se llena la tabla con las materias primas -->
 
-                </tbody>
-            </table>
+                            <?php if ($filas): ?>
+                                <?php foreach ($filas as $regmp) { ?>
+                                    <tr>
+                                        <td hidden><?php echo $regmp['id']; ?></td>
+                                        <td><?php echo $regmp['nombre']; ?></td>
+                                        <td><?php echo $regmp['stockminimo'] . ' ' . $regmp['unidad_medida']; ?></td>
+                                        <td style="background-color: <?php if ($regmp['stockactual'] < $regmp['stockminimo']) {
+                                                                            echo "#f55f5f";
+                                                                        } else if ($regmp['stockactual'] == $regmp['stockminimo']) {
+                                                                            echo "#ffff80";
+                                                                        } else {
+                                                                            echo "#a5d46a";
+                                                                        }
+                                                                        ?>"><?php echo $regmp['stockactual'] . ' ' . $regmp['unidad_medida']; ?></td>
+                                        <td><?php $prove = $obj->consultaProveedor($regmp['proveedor']);
+                                            echo $prove[0]['nombre'];
+                                            ?></td>
+                                        <td style="display:none"><?php echo $prove[0]['id_proveedor'] ?></td>
+                                        <td style="display:none"><?php echo $regmp['categoriaMP']; ?>
+                                        <td style="display:none"><?php echo isset($regmp['es_perecedero']) ? $regmp['es_perecedero'] : 1; ?></td>
+                                        <td style="display:none"><?php echo !empty($regmp['fecha_vencimiento']) ? $regmp['fecha_vencimiento'] : ''; ?></td>
+                                        <td class="text-center">
+                                            <button class="btn btn-success verMPbtn" title="Consultar Materia Prima">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-primary editbtn" title="Editar Materia Prima">
+                                                <ion-icon name="create-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-danger deletebtn" title="Eliminar Materia Prima">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
+                                        </td>
+                                    <?php }  ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center">No existen registros para mostrar</td>
+                                    </tr>
+                                <?php endif; ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
     </div>
 
 

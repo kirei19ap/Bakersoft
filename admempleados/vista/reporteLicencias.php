@@ -1,5 +1,5 @@
 <?php
-include_once("head/headestadisticas.php");
+include_once("../../includes/head_app.php");
 require_once(__DIR__ . "/../controlador/controladoradmempleado.php");
 $obj = new ControladorAdmEmpleado();
 // admempleados/vista/buscador.php
@@ -10,7 +10,7 @@ $obj = new ControladorAdmEmpleado();
 
 <!-- Encabezado -->
 <div class="titulo-contenido shadow-sm">
-    <h1 class="display-5">Reportes y Estadísticas</h1>
+    <h1 class="display-5">Reportes</h1>
 </div>
 
 
@@ -18,18 +18,31 @@ $obj = new ControladorAdmEmpleado();
     <div class="container-fluid">
         <!-- Parámetros -->
         <div class="card mb-3">
-            <div class="card-header bg-light"><strong>Listado integral de licencias por rango de fechas</strong></div>
+            <div class="card-header bg-light"><strong>Listado integral de licencias por rango de fechas y tipo</strong></div>
             <div class="card-body">
                 <form id="frmParams" class="row g-3">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label">Desde *</label>
                         <input type="date" class="form-control" id="fdesde" required>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <label class="form-label">Hasta *</label>
                         <input type="date" class="form-control" id="fhasta" required>
                     </div>
-                    <div class="col-sm-4 d-flex align-items-end gap-2">
+                    <div class="col-sm-3">
+                        <label for="tipoLicencia" class="form-label">Tipo de licencia</label>
+                        <select id="tipoLicencia" class="form-select">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="estadoLicencia" class="form-label">Estado</label>
+                        <select id="estadoLicencia" class="form-select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+<small class="text-muted d-block mt-2">* Rango de fechas obligatorio. Orden: fecha de inicio ascendente.</small>
+                    <div class="col-12 d-flex justify-content-end gap-2">
                         <button type="submit" class="btn btn-primary">
                             Generar listado
                         </button>
@@ -38,7 +51,6 @@ $obj = new ControladorAdmEmpleado();
                         </button>
                     </div>
                 </form>
-                <small class="text-muted d-block mt-2">* Rango de fechas obligatorio. Orden: fecha de inicio ascendente.</small>
             </div>
         </div>
 
@@ -87,8 +99,11 @@ $obj = new ControladorAdmEmpleado();
         const $tabla = $('#tablaReporte');
         const $alerta = $('#alerta');
         const $btnPdf = $('#btnPdf');
+        const $tipo = $('#tipoLicencia');
+        const $estado = $('#estadoLicencia');
         let dt = null;
         let ultimoRango = null;
+
 
         function fmtFechaDMY(s) {
             if (!s) return '';
@@ -117,7 +132,7 @@ $obj = new ControladorAdmEmpleado();
         function initDT() {
             if (dt) return dt;
             dt = $tabla.DataTable({
-                dom: "<'row align-items-center mb-2'<'col-md-6'l><'col-md-6'f>>" +
+                dom: "<'row align-items-center mb-2'<'col-md-6'l>>" +
                     "rt" +
                     "<'row mt-2'<'col-md-5'i><'col-md-7'p>>",
                 language: {
@@ -134,8 +149,6 @@ $obj = new ControladorAdmEmpleado();
                         "next": ">",
                         "previous": "<"
                     },
-                    "search": "Buscador:",
-                    "searchPlaceholder": "Buscar...",
                     "emptyTable": "No hay registros para mostrar en la tabla",
                 },
                 autoWidth: false,
@@ -188,11 +201,82 @@ $obj = new ControladorAdmEmpleado();
             return dt;
         }
 
-        function cargar(desde, hasta) {
+        function cargarEstados() {
+            const fd = new FormData();
+            fd.append('accion', 'rrhh_listar_estados');
+
+            fetch('../../licencias/controlador/controladorLicencias.php', {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(r => r.json())
+                .then(resp => {
+                    if (!resp?.ok || !Array.isArray(resp.items)) return;
+
+                    // Limpiamos todo menos "Todos"
+                    $estado.find('option:not(:first)').remove();
+
+                    resp.items.forEach(e => {
+                        // Según tu tabla:
+                        // id_estado, nombre
+                        const id = e.id_estado ?? e.id;
+                        const desc = e.nombre ?? '';
+
+                        if (!id || !desc) return;
+
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = desc;
+                        $estado.append(opt);
+                    });
+                })
+                .catch(() => {
+                    // Si falla, dejamos solo "Todos"
+                });
+        }
+
+
+        function cargarTipos() {
+            const fd = new FormData();
+            fd.append('accion', 'rrhh_listar_tipos');
+
+            fetch('../../licencias/controlador/controladorLicencias.php', {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(r => r.json())
+                .then(resp => {
+                    if (!resp?.ok || !Array.isArray(resp.items)) return;
+
+                    // Limpiamos todo menos la opción "Todas"
+                    $tipo.find('option:not(:first)').remove();
+
+                    resp.items.forEach(t => {
+                        // 👇 Ajustá los nombres según lo que devuelva listarTipos()
+                        const id = t.id_tipo_licencia ?? t.id_tipo ?? t.id ?? null;
+                        const desc = t.nombre ?? t.descripcion ?? t.tipo ?? null;
+
+                        if (id == null || !desc) return;
+
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = desc;
+                        $tipo.append(opt);
+                    });
+                })
+                .catch(() => {
+                    // Si falla, dejamos solo "Todas"
+                });
+        }
+
+
+        function cargar(desde, hasta, tipo, estado) {
             const fd = new FormData();
             fd.append('accion', 'rrhh_reporte_listar');
             fd.append('desde', desde);
             fd.append('hasta', hasta);
+            fd.append('tipo', tipo || '');
+            fd.append('estado', estado || '');
 
             return fetch('../../licencias/controlador/controladorLicencias.php', {
                 method: 'POST',
@@ -200,11 +284,16 @@ $obj = new ControladorAdmEmpleado();
             }).then(r => r.json());
         }
 
+
+
+
         // Submit de parámetros
         $('#frmParams').on('submit', function(e) {
             e.preventDefault();
             const desde = $('#fdesde').val();
             const hasta = $('#fhasta').val();
+            const tipo = $tipo.val();
+            const estado = $estado.val();
 
             if (!desde || !hasta) {
                 $alerta.removeClass('d-none alert-success').addClass('alert-warning')
@@ -221,7 +310,7 @@ $obj = new ControladorAdmEmpleado();
 
             $alerta.addClass('d-none').text('');
 
-            cargar(desde, hasta).then(resp => {
+            cargar(desde, hasta, tipo, estado).then(resp => {
                 const tabla = initDT();
 
                 if (!resp?.ok) {
@@ -241,10 +330,11 @@ $obj = new ControladorAdmEmpleado();
                     return;
                 }
 
-                // hay datos
                 ultimoRango = {
                     desde,
-                    hasta
+                    hasta,
+                    tipo,
+                    estado
                 };
                 $btnPdf.prop('disabled', false);
                 $alerta.addClass('d-none').text('');
@@ -257,18 +347,33 @@ $obj = new ControladorAdmEmpleado();
             });
         });
 
+
+
         // Botón PDF
         $btnPdf.on('click', function() {
             if (!ultimoRango) return;
-            const q = new URLSearchParams({
+
+            const params = {
                 accion: 'rrhh_reporte_pdf',
                 desde: ultimoRango.desde,
                 hasta: ultimoRango.hasta
-            });
+            };
+
+            if (ultimoRango.tipo) {
+                params.tipo = ultimoRango.tipo;
+            }
+            if (ultimoRango.estado) {
+                params.estado = ultimoRango.estado;
+            }
+
+            const q = new URLSearchParams(params);
             window.open('../../licencias/controlador/controladorLicencias.php?' + q.toString(), '_blank');
         });
 
-    })(jQuery); // <-- pasa jQuery como $
+        cargarTipos();
+         cargarEstados();
+
+    })(jQuery);
 </script>
 
 

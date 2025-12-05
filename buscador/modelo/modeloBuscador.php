@@ -80,6 +80,70 @@ class modeloBuscador {
         $consulta->bindParam(":nombre_prove",$nombreProveedor);
         return ($consulta->execute()) ? $consulta->fetch(PDO::FETCH_ASSOC) : false;
     }
+
+        /**
+     * Lista de clientes para el buscador de pedidos de clientes.
+     */
+    public function clientesTodos()
+    {
+        $sql = "SELECT id_cliente, nombre
+                FROM clientes
+                WHERE estado = 'Activo'
+                ORDER BY nombre";
+        $consulta = $this->PDO->prepare($sql);
+        return ($consulta->execute()) ? $consulta->fetchAll(PDO::FETCH_ASSOC) : false;
+    }
+
+    /**
+     * Búsqueda de pedidos de clientes (pedidoventa) con filtros opcionales:
+     * - rango de fechas (fecha_desde / fecha_hasta, formato Y-m-d)
+     * - cliente
+     * - estado
+     */
+    public function buscarPedidosClientes($fecha_desde = null, $fecha_hasta = null, $clienteId = null, $estado = null)
+    {
+        $sql = "SELECT 
+                    pv.idPedidoVenta,
+                    pv.fechaPedido,
+                    pv.total,
+                    pv.estado,
+                    c.nombre AS cliente,
+                    e.descEstado
+                FROM pedidoventa pv
+                INNER JOIN clientes c ON pv.idCliente = c.id_cliente
+                LEFT JOIN estadospedidos e ON pv.estado = e.codEstado
+                WHERE 1 = 1";
+
+        $params = [];
+
+        if (!empty($fecha_desde)) {
+            $sql .= " AND DATE(pv.fechaPedido) >= :fecha_desde";
+            $params[':fecha_desde'] = $fecha_desde;
+        }
+
+        if (!empty($fecha_hasta)) {
+            $sql .= " AND DATE(pv.fechaPedido) <= :fecha_hasta";
+            $params[':fecha_hasta'] = $fecha_hasta;
+        }
+
+        if (!empty($clienteId)) {
+            $sql .= " AND pv.idCliente = :clienteId";
+            $params[':clienteId'] = $clienteId;
+        }
+
+        if (!empty($estado)) {
+            $sql .= " AND pv.estado = :estado";
+            $params[':estado'] = $estado;
+        }
+
+        $sql .= " ORDER BY pv.fechaPedido DESC, pv.idPedidoVenta DESC";
+
+        $stmt = $this->PDO->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 
 ?>

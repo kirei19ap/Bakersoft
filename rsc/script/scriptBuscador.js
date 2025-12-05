@@ -25,3 +25,23 @@ var table = new DataTable('#MP-lista', {
     "autoWidth": false,
     "responsive": true
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const tipoRadios = document.querySelectorAll('input[name="tipoPedido"]');
+    const filtrosMP = document.getElementById('filtrosMP');
+    const filtrosClientes = document.getElementById('filtrosClientes');
+
+    if (!tipoRadios.length) return;
+
+    tipoRadios.forEach(r => {
+        r.addEventListener('change', () => {
+            if (r.value === 'mp') {
+                filtrosMP.classList.remove('d-none');
+                filtrosClientes.classList.add('d-none');
+            } else {
+                filtrosClientes.classList.remove('d-none');
+                filtrosMP.classList.add('d-none');
+            }
+        });
+    });
+});

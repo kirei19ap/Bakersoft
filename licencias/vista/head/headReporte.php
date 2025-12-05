@@ -68,9 +68,21 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li>
+                    <a id="menuLicencias" class="" href="../../empleado/vista/mis_turnos.php">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span>Turnos Laborales</span>
+                    </a>
+                </li>
+                <li>
                     <a id="menuLicencias" class="active" href="../../licencias/vista/reporteMisLicencias.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Reporte Mis Licencias</span>
+                    </a>
+                </li>
+                <li>
+                  <a id="menuLicencias" class="" href="/bakersoft/inicio.php">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span>Volver al menu principal</span>
                     </a>
                 </li>
             </ul>

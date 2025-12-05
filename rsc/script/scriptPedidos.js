@@ -3,6 +3,7 @@ const materiaPrimaSelect = document.getElementById('materiaPrima');
 const tablaBody = document.querySelector('#tablaPedido tbody');
 const generarPedidoBTN = document.getElementById('generarPedidoBtn');
 const cancelarBtn = document.getElementById('cancelarPedidoBtn');
+const recibirBtn = document.getElementById('recibirPedidoBtn');
 const agregarBTN = document.getElementById('agregarBTN');
 
 var table = new DataTable ('#Pedidos', {
@@ -14,7 +15,7 @@ var table = new DataTable ('#Pedidos', {
           infoPostFix: "",
           infoFiltered: "(filtrado de un total de _MAX_ registros)",
           loadingRecords: "Cargando...",
-          lengthMenu: "Mostrar _MENU_ registros",
+          lengthMenu: "Mostrar _MENU_ ",
           paginate: {
               first: "<<",
               last: ">>",
@@ -27,7 +28,7 @@ var table = new DataTable ('#Pedidos', {
       },
       lengthMenu: [5, 10, 25, 50],
       pageLength: 10,
-      order: [[0, "asc"]],
+      order: [[1, "dsc"]],
       searching: true,
       paging: true,
       info: true,
@@ -171,6 +172,50 @@ generarPedidoBTN.addEventListener('click', () => {
 });
 }
 
+// Recibir el pedido (marcar como recibido e impactar stock)
+if (recibirBtn) {
+  recibirBtn.addEventListener('click', () => {
+
+    Swal.fire({
+      title: '¿Confirmar recepción del pedido?',
+      text: 'Se actualizará el stock de todas las materias primas incluidas en este pedido.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, marcar como recibido',
+      cancelButtonText: 'No, volver'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`recibirPedido.php?id=${pedidoId}`, { method: 'POST' })
+          .then(res => {
+            if (!res.ok) {
+              return res.text().then(texto => { throw new Error(texto); });
+            }
+            return res.text();
+          })
+          .then(msg => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Pedido recibido',
+              text: msg
+            }).then(() => {
+              // Volvemos al listado de pedidos
+              window.location.href = 'index.php';
+            });
+          })
+          .catch(err => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.message || 'No se pudo recibir el pedido. Verifique el estado e intente nuevamente.'
+            });
+          });
+      }
+    });
+  });
+}
+
 //Cancela el pedido
 
   if (cancelarBtn) {
@@ -215,4 +260,6 @@ generarPedidoBTN.addEventListener('click', () => {
     console.warn('Botón cancelarPedidoBtn no encontrado');
   }
 // Cargar pedido al inicio
-cargarPedido();
+if (tablaBody) {
+  cargarPedido();
+}

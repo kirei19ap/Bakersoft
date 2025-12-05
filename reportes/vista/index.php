@@ -1,5 +1,5 @@
 <?php
-    require_once("head/head.php");
+    include_once("../../includes/head_app.php");
     require_once("../controlador/controladorReportes.php");
     $obj = new controladorReportes();
 ?>

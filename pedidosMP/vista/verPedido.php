@@ -1,15 +1,38 @@
 <?php
-    include_once("head/head.php");
-    require_once("../controlador/controladorPedido.php");
-    $ctrl = new controladorPedido();
-    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-        echo "ID de pedido no válido.";
-        exit;
-    }
-    $idPedido = (int) $_GET['id'];
-    $pedido = $ctrl->traerDetallePedido($idPedido);
-    $proveedorNombre = $pedido[0]['proveedor'];
+include_once("../../includes/head_app.php");
+require_once("../controlador/controladorPedido.php");
+$ctrl = new controladorPedido();
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    echo "ID de pedido no válido.";
+    exit;
+}
+$idPedido = (int) $_GET['id'];
+$pedido = $ctrl->traerDetallePedido($idPedido);
+
+if (!$pedido) {
+    echo "No se encontró el pedido.";
+    exit;
+}
+
+$proveedorNombre    = $pedido[0]['proveedor'];
+$estadoCodigo       = (int)$pedido[0]['codEstado'];
+$estadoDescripcion  = $pedido[0]['estadoPedido'];
+
+// Estados relevantes para MP
+$esRecibido   = ($estadoCodigo === 50); // Recibida
+$esCancelado  = ($estadoCodigo === 60); // Cancelado
+$deshabilitarAcciones = $esRecibido || $esCancelado;
+
+// Clase Bootstrap para el badge de estado
+$claseBadge = 'bg-secondary';
+if ($esRecibido) {
+    $claseBadge = 'bg-success';
+} elseif ($esCancelado) {
+    $claseBadge = 'bg-danger';
+}
+
 ?>
+
 <div class="titulo-contenido shadow-sm">
     <h1 class="display-5">Detalle de Pedido de Materia Prima</h1>
 </div>
@@ -31,15 +54,36 @@
                     <div>
                         <span class="fw-semibold me-2">Proveedor:</span>
                         <span class="fw-bold fs-5 text-primary"><?= htmlspecialchars($proveedorNombre) ?></span>
+
+                        <div class="mt-2">
+                            <span class="fw-semibold me-2">Estado:</span>
+                            <span class="badge <?= $claseBadge ?>">
+                                <?= htmlspecialchars($estadoDescripcion) ?>
+                            </span>
+                        </div>
                     </div>
-                    <script>
-                    const pedidoId = <?php echo $idPedido ?>
-                    </script>
-                    <button id="cancelarPedidoBtn" class="btn btn-danger">
-                        <ion-icon name="close-circle-outline"></ion-icon> Cancelar Pedido
-                    </button>
+
+                    <div class="d-flex gap-2">
+                        <script>
+                            const pedidoId = <?php echo $idPedido ?>;
+                        </script>
+
+                        <button id="recibirPedidoBtn"
+                            class="btn btn-success"
+                            <?= $deshabilitarAcciones ? 'disabled' : '' ?>>
+                            <ion-icon name="checkmark-done-outline"></ion-icon> Marcar como recibido
+                        </button>
+
+                        <button id="cancelarPedidoBtn"
+                            class="btn btn-danger"
+                            <?= $deshabilitarAcciones ? 'disabled' : '' ?>>
+                            <ion-icon name="close-circle-outline"></ion-icon> Cancelar Pedido
+                        </button>
+                    </div>
                 </div>
             </div>
+
+
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
@@ -55,11 +99,11 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($pedido as $item): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($item['materiaprima']) ?></td>
-                                    <td><?= htmlspecialchars($item['cantidad']) ?></td>
-                                    <td><?= htmlspecialchars($item['unidad_medida']) ?></td>
-                                </tr>
+                                    <tr>
+                                        <td><?= htmlspecialchars($item['materiaprima']) ?></td>
+                                        <td><?= htmlspecialchars($item['cantidad']) ?></td>
+                                        <td><?= htmlspecialchars($item['unidad_medida']) ?></td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -75,4 +119,4 @@
     </div>
     <?php
     require_once("foot/foot.php")
-?>
+    ?>

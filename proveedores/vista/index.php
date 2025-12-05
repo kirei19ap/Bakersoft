@@ -1,9 +1,10 @@
 <?php
-    require_once("head/head.php");
-    require_once("../controlador/controladorProveedores.php");
-    $obj = new controladorproveedor();
-    $filas = $obj->mostrarTodos();
-    $prov_all = $obj->mostrarProvincias();
+$currentPage = 'proveedores';
+include_once("../../includes/head_app.php");
+require_once("../controlador/controladorProveedores.php");
+$obj = new controladorproveedor();
+$filas = $obj->mostrarTodos();
+$prov_all = $obj->mostrarProvincias();
 ?>
 <div class="titulo-contenido shadow-sm">
     <h1 class="display-5">Registro de Proveedores</h1>
@@ -19,11 +20,11 @@
             </button>
         </div>
     </div>
-    <div class=""><?php    
-        if (!empty($_SESSION['error_valida_proveedor'])):
-            $mensaje = $_SESSION['error_valida_proveedor'];
-            unset($_SESSION['error_valida_proveedor']);
-        ?>
+    <div class=""><?php
+                    if (!empty($_SESSION['error_valida_proveedor'])):
+                        $mensaje = $_SESSION['error_valida_proveedor'];
+                        unset($_SESSION['error_valida_proveedor']);
+                    ?>
             <script>
                 console.log("<?php echo $mensaje; ?>");
                 Swal.fire({
@@ -34,12 +35,12 @@
                 });
             </script>
         <?php endif; ?>
-</div>
-<div class=""><?php
-        if (!empty($_SESSION['error_borra_proveedor'])):
-            $mensaje = $_SESSION['error_borra_proveedor'];
-            unset($_SESSION['error_borra_proveedor']);
-        ?>
+    </div>
+    <div class=""><?php
+                    if (!empty($_SESSION['error_borra_proveedor'])):
+                        $mensaje = $_SESSION['error_borra_proveedor'];
+                        unset($_SESSION['error_borra_proveedor']);
+                    ?>
             <script>
                 console.log("<?php echo $mensaje; ?>");
                 Swal.fire({
@@ -50,9 +51,9 @@
                 });
             </script>
         <?php endif; ?>
-</div>
- 
-    
+    </div>
+
+
     <!-- Modal Registrar Proveedor-->
     <div class="modal fade" id="registrarProveedor" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -71,30 +72,30 @@
                         <div class="mb-3 ">
                             <div class="row">
                                 <div class="col">
-                            <label for="Calle" class="form-label">Calle</label>
-                            <input type="text" class="form-control" name="calle" id="calle">
-                            </div>
-                            <div class="col">
-                            <label for="altura" class="form-label">Altura</label>
-                            <input type="number" class="form-control" name="altura" id="altura">
-                            </div>
+                                    <label for="Calle" class="form-label">Calle</label>
+                                    <input type="text" class="form-control" name="calle" id="calle">
+                                </div>
+                                <div class="col">
+                                    <label for="altura" class="form-label">Altura</label>
+                                    <input type="number" class="form-control" name="altura" id="altura">
+                                </div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                        <label for="provincia" class="form-label">Provincia</label>
+                            <label for="provincia" class="form-label">Provincia</label>
                             <select class="form-select" name="provincia" id="provincia">
                                 <option value="-1"></option>
                                 <?php
-                                    foreach ($prov_all as $provincia) {
+                                foreach ($prov_all as $provincia) {
                                 ?>
-                                <option value="<?php echo $provincia['id_provincia']; ?>">
-                                    <?php echo $provincia['provincia']; ?></option>
+                                    <option value="<?php echo $provincia['id_provincia']; ?>">
+                                        <?php echo $provincia['provincia']; ?></option>
                                 <?php
                                 }
                                 ?>
                             </select>
-                            
+
                         </div>
                         <div class="mb-3">
                             <label for="localidad" class="form-label">Localidad</label>
@@ -141,24 +142,24 @@
                         <div class="mb-3 ">
                             <div class="row">
                                 <div class="col">
-                            <label for="editcalleprove" class="form-label">Calle</label>
-                            <input type="text" class="form-control" name="editcalleprove" id="editcalleprove">
-                            </div>
-                            <div class="col">
-                            <label for="editalturaprove" class="form-label">Altura</label>
-                            <input type="number" class="form-control" name="editalturaprove" id="editalturaprove">
-                            </div>
+                                    <label for="editcalleprove" class="form-label">Calle</label>
+                                    <input type="text" class="form-control" name="editcalleprove" id="editcalleprove">
+                                </div>
+                                <div class="col">
+                                    <label for="editalturaprove" class="form-label">Altura</label>
+                                    <input type="number" class="form-control" name="editalturaprove" id="editalturaprove">
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="editprovProve" class="form-label">Provincia</label>
                             <select class="form-select" name="editprovProve" id="editprovProve">
-                            <option value="-1"></option>
+                                <option value="-1"></option>
                                 <?php
-                                    foreach ($prov_all as $provincia) {
+                                foreach ($prov_all as $provincia) {
                                 ?>
-                                <option value="<?php echo $provincia['id_provincia']; ?>">
-                                    <?php echo $provincia['provincia']; ?></option>
+                                    <option value="<?php echo $provincia['id_provincia']; ?>">
+                                        <?php echo $provincia['provincia']; ?></option>
                                 <?php
                                 }
                                 ?>
@@ -196,57 +197,57 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                        <div class="mb-3 oculto">
-                            <label for="veridProve" class="form-label">ID</label>
-                            <input type="text" required readonly class="form-control" name="veridProve"
-                                id="veridProve">
-                        </div>
-                        <div class="mb-3">
-                            <label for="vernombreProve" class="form-label">Nombre del proveedor</label>
-                            <input type="text" required readonly class="form-control" name="vernombreProve"
-                                id="vernombreProve">
-                        </div>
-                        <div class="mb-3 ">
-                            <div class="row">
-                                <div class="col">
-                            <label for="vercalleprove" class="form-label">Calle</label>
-                            <input type="text" readonly class="form-control" name="vercalleprove" id="vercalleprove">
+                    <div class="mb-3 oculto">
+                        <label for="veridProve" class="form-label">ID</label>
+                        <input type="text" required readonly class="form-control" name="veridProve"
+                            id="veridProve">
+                    </div>
+                    <div class="mb-3">
+                        <label for="vernombreProve" class="form-label">Nombre del proveedor</label>
+                        <input type="text" required readonly class="form-control" name="vernombreProve"
+                            id="vernombreProve">
+                    </div>
+                    <div class="mb-3 ">
+                        <div class="row">
+                            <div class="col">
+                                <label for="vercalleprove" class="form-label">Calle</label>
+                                <input type="text" readonly class="form-control" name="vercalleprove" id="vercalleprove">
                             </div>
                             <div class="col">
-                            <label for="veralturaprove" class="form-label">Altura</label>
-                            <input type="number" readonly class="form-control" name="veralturaprove" id="veralturaprove">
-                            </div>
+                                <label for="veralturaprove" class="form-label">Altura</label>
+                                <input type="number" readonly class="form-control" name="veralturaprove" id="veralturaprove">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="verprovProve" class="form-label">Provincia</label>
-                            <select class="form-select" name="verprovProve" id="verprovProve" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="verprovProve" class="form-label">Provincia</label>
+                        <select class="form-select" name="verprovProve" id="verprovProve" disabled>
                             <option value="-1"></option>
-                                <?php
-                                    foreach ($prov_all as $provincia) {
-                                ?>
+                            <?php
+                            foreach ($prov_all as $provincia) {
+                            ?>
                                 <option value="<?php echo $provincia['id_provincia']; ?>">
                                     <?php echo $provincia['provincia']; ?></option>
-                                <?php
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="verlocprove" class="form-label">Localidad</label>
-                            <select class="form-select" name="verlocprove" id="verlocprove" disabled></select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="veremailProve" class="form-label">Email</label>
-                            <input type="text" readonly class="form-control" name="veremailProve" id="veremailProve">
-                        </div>
-                        <div class="mb-3">
-                            <label for="vertelefonoProve" class="form-label">Teléfono</label>
-                            <input type="text" readonly class="form-control" name="vertelefonoProve" id="vertelefonoProve">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="verlocprove" class="form-label">Localidad</label>
+                        <select class="form-select" name="verlocprove" id="verlocprove" disabled></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="veremailProve" class="form-label">Email</label>
+                        <input type="text" readonly class="form-control" name="veremailProve" id="veremailProve">
+                    </div>
+                    <div class="mb-3">
+                        <label for="vertelefonoProve" class="form-label">Teléfono</label>
+                        <input type="text" readonly class="form-control" name="vertelefonoProve" id="vertelefonoProve">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,60 +298,63 @@
 
 
     <div class="contenido">
-        <div class="tabla-empleados">
-            <table id="Provedores-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                <thead class="thead-dark">
-                    <tr class="text-center">
-                        <th hidden scope="col">ID</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Dirección</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Teléfono</th>
-                        <th scope="col">Acciones</th>
-                        <th style="display:none;" scope="col">Provincia</th>
-                        <th style="display:none;" scope="col">Localidad</th>
-                    </tr>
-                </thead>
-                <tbody id="empleados-lista">
-                    <!-- Aquí se llena la tabla con los proveedores -->
+        <div class="card">
+            <div class="card-body">
+                <div class="tabla-empleados">
+                    <table id="Provedores-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                        <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th hidden scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Dirección</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Teléfono</th>
+                                <th scope="col">Acciones</th>
+                                <th style="display:none;" scope="col">Provincia</th>
+                                <th style="display:none;" scope="col">Localidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empleados-lista">
+                            <!-- Aquí se llena la tabla con los proveedores -->
 
-                    <?php if($filas): ?>
-                    <?php foreach ($filas as $regprov){?>
-                    <tr>
-                        <td hidden><?php echo $regprov['id_proveedor'];?></td>
-                        <td><?php echo $regprov['nombre'];?></td>
-                        <td><?php echo $regprov['calle'].' '.$regprov['altura'];?></td>
-                        <td><?php echo $regprov['email'];?></td>
-                        <td><?php echo $regprov['telefono'];?></td>
-                        <td style="display:none;"><?php echo $regprov['localidad'];?></td>
-                        <td style="display:none;"><?php echo $regprov['provincia'];?></td>
+                            <?php if ($filas): ?>
+                                <?php foreach ($filas as $regprov) { ?>
+                                    <tr>
+                                        <td hidden><?php echo $regprov['id_proveedor']; ?></td>
+                                        <td><?php echo $regprov['nombre']; ?></td>
+                                        <td><?php echo $regprov['calle'] . ' ' . $regprov['altura']; ?></td>
+                                        <td><?php echo $regprov['email']; ?></td>
+                                        <td><?php echo $regprov['telefono']; ?></td>
+                                        <td style="display:none;"><?php echo $regprov['localidad']; ?></td>
+                                        <td style="display:none;"><?php echo $regprov['provincia']; ?></td>
 
 
-                        <td class="text-center">
-                            <button class="btn btn-success verbtnproveed" title="Consultar Proveedor">
-                                <ion-icon name="eye-outline"></ion-icon>
-                            </button>
-                            <button class="btn btn-primary editbtnproveed" title="Editar Proveedor">
-                                <ion-icon name="create-outline"></ion-icon>
-                            </button>
-                            <button class="btn btn-danger deletebtnProveed" title="Eliminar Proveedor">
-                                <ion-icon name="trash-outline"></ion-icon>
-                            </button>
-                        </td>
-                        <?php }  ?>
-                        <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="text-center">No existen registros para mostrar</td>
-                    </tr>
-                    <?php endif; ?>
+                                        <td class="text-center">
+                                            <button class="btn btn-success verbtnproveed" title="Consultar Proveedor">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-primary editbtnproveed" title="Editar Proveedor">
+                                                <ion-icon name="create-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-danger deletebtnProveed" title="Eliminar Proveedor">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
+                                        </td>
+                                    <?php }  ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center">No existen registros para mostrar</td>
+                                    </tr>
+                                <?php endif; ?>
 
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
     </div>
 
 
     <?php
     require_once("foot/foot.php")
-?>
+    ?>

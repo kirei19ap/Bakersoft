@@ -1,5 +1,5 @@
 <?php
-include_once("head/headbuscador.php");
+include_once("../../includes/head_app.php");
 require_once(__DIR__ . "/../controlador/controladoradmempleado.php");
 $obj = new ControladorAdmEmpleado();
 // admempleados/vista/buscador.php

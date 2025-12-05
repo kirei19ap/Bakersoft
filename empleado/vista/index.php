@@ -27,7 +27,6 @@ function fecha($v)
   return $v ? date('d/m/Y', strtotime($v)) : '';
 }
 ?>
-
 <div class="titulo-contenido shadow-sm">
   <h1 class="display-5">Empleados</h1>
 </div>

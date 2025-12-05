@@ -62,6 +62,26 @@ class ModeloLicencias
         return $this->PDO->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function tipoImpactaBancoVacaciones(int $idTipo): bool
+    {
+        if ($idTipo <= 0) return false;
+
+        $sql = "
+            SELECT impacta_banco_vacaciones
+            FROM tipos_licencia
+            WHERE id_tipo = :id
+            LIMIT 1
+        ";
+        $st = $this->PDO->prepare($sql);
+        $st->execute([':id' => $idTipo]);
+        $val = $st->fetchColumn();
+
+        if ($val === false) {
+            return false;
+        }
+        return (int)$val === 1;
+    }
+
     public function estadoIdPorNombre(string $nombre): ?int
     {
         if (isset($this->cacheEstados[$nombre])) {
@@ -503,6 +523,7 @@ class ModeloLicencias
         l.id_estado               AS id_estado,
         e.nombre                  AS estado,
         CONCAT(emp.apellido, ', ', emp.nombre) AS empleado,
+        tl.id_tipo                AS id_tipo,
         tl.descripcion            AS tipo,
         d.fecha_inicio,
         d.fecha_fin,
@@ -885,4 +906,18 @@ class ModeloLicencias
         }
         return $serie;
     }
+
+    public function listarEstados(): array
+{
+    $sql = "
+        SELECT 
+            id_estado,
+            nombre
+        FROM estados_licencia
+        ORDER BY nombre
+    ";
+    $st = $this->PDO->query($sql);
+    return $st->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

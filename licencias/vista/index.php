@@ -156,6 +156,10 @@ function fecha($v)
     .mini-card .badge {
       font-size: 1rem;
     }
+
+    .dt-empty {
+      text-align: center !important;
+    }
   }
 </style>
 </style>
@@ -316,10 +320,6 @@ function fecha($v)
 
                     </tr>
                   <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="8" class="text-center text-muted">Aún no hay solicitudes</td>
-                  </tr>
                 <?php endif; ?>
               </tbody>
             </table>

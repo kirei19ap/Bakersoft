@@ -4,10 +4,10 @@ require_once("./login/controlador/usrControlador.php");
 $userSesion = new usrControlador(); #Inicia la sesion
 
 
-if (isset($SESSION['user'])) {
+if (isset($_SESSION['user'])) {
     #echo "hay sesion";
     #$userSesion->setCurrentUser($SESSION['user']);
-    #include_once("menuprincipal/MenuPrincipal.php");
+    include_once("inicio.php");
 
 } elseif (isset($_POST['usuario']) && isset($_POST['contrasena'])) {
     #echo "validacion de login";
@@ -22,13 +22,17 @@ if (isset($SESSION['user'])) {
         $_SESSION['rol'] = $datosUsuario[0]['nombre_rol'];
         $_SESSION['nomyapellido'] = $datosUsuario[0]['nomyapellido'];
         if ($datosUsuario[0]['nombre_rol'] == "Admin Usuarios") {
-            include_once("menuprincipal/MenuPrincipalUSU.php");
+            include_once("inicio.php");
         } else if ($datosUsuario[0]['nombre_rol'] == "Admin Produccion") {
-            include_once("menuprincipal/MenuPrincipalMP.php");
+            include_once("inicio.php");
         } else if ($datosUsuario[0]['nombre_rol'] == "Admin RRHH") {
-            include_once("menuprincipal/MenuPrincipalEMP.php");
+            include_once("inicio.php");
         } else if ($datosUsuario[0]['nombre_rol'] == "Usuario") {
-            header("Location: empleado/vista/index.php");
+            header("Location: inicio.php");
+            exit();
+        }
+        else if ($datosUsuario[0]['nombre_rol'] == "Encargado de atención cliente") {
+            header("Location: inicio.php");
             exit();
         }
         #echo $_SESSION['usuario'];

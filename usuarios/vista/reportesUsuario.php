@@ -1,11 +1,24 @@
 <?php
-include_once("head/headreporte.php");
+include_once("../../includes/head_app.php");
 ?>
 
 <div class="titulo-contenido shadow-sm">
     <h1 class="display-5">Reportes de Usuarios</h1>
 </div>
+<style>
+        .chart-box {
+            position: relative;
+            height: 250px;
+            /* altura fija => no hay “descenso” */
+        }
 
+        .chart-box>canvas {
+            width: 100% !important;
+            height: 100% !important;
+            /* el canvas ocupa la caja fija */
+            display: block;
+        }
+    </style>
 <div class="contenido-principal">
     <div class="row g-3">
         <div class="col-12 col-lg-6">

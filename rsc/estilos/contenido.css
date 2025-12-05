@@ -64,10 +64,9 @@
     left: -9999px;
   }
 
-  .form-busqueda {
-    display: flex;
-    align-items: flex-end;
-    gap: 15px;
+/* === BUSCADOR: layout basado en Bootstrap, sin flex externo === */
+.form-busqueda {
+    display: block;                 /* antes era flex, ahora dejamos que manden las rows/cols */
     background-color: #f4f6f8;
     padding: 15px 20px;
     border-radius: 10px;
@@ -75,31 +74,34 @@
     margin: 30px auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     font-family: 'Segoe UI', sans-serif;
-    flex-wrap: wrap;
 }
 
-.form-group {
+/* Limitamos estos estilos SOLO al buscador para no romper otros forms */
+.form-busqueda .form-group {
     display: flex;
     flex-direction: column;
-    min-width: 200px;
+    margin-bottom: 10px;
 }
 
-.form-group label {
+.form-busqueda .form-group label {
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 4px;
     color: #333;
 }
 
-.form-group input,
-.form-group select {
-    padding: 6px 10px;
-    font-size: 13px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+/* Inputs y selects con look más Bootstrap, sin padding raro ni ovalado */
+.form-busqueda .form-group input,
+.form-busqueda .form-group select {
+    padding: 0.375rem 0.75rem;      /* estándar Bootstrap */
+    font-size: 0.9rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
     background-color: #fff;
 }
 
+/* El botón mantiene el estilo azul pero no controla su posición.
+   La posición la define el <div class="col-12 text-end"> del formulario */
 .form-busqueda button {
     background-color: #3498db;
     color: white;
@@ -109,16 +111,15 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    height: fit-content;
 }
 
 .form-busqueda button:hover {
     background-color: #2980b9;
 }
 
+/* En móviles sólo dejamos que se apilen normalmente */
 @media (max-width: 600px) {
     .form-busqueda {
-        flex-direction: column;
-        align-items: stretch;
+        padding: 10px 12px;
     }
 }

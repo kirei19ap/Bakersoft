@@ -70,6 +70,12 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li>
+                    <a class="" href="../../productos/vista/index.php">
+                        <ion-icon name="pizza-outline"></ion-icon>
+                        <span>Productos</span>
+                    </a>
+                </li>
+                <li>
                     <a class="active" href="index.php">
                         <ion-icon name="cart"></ion-icon>
                         <span>Pedidos de MP</span>

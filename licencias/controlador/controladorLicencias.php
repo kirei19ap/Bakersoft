@@ -139,6 +139,50 @@ class ControladorLicencias
                 $err[] = "El rango seleccionado se solapa con otra licencia aprobada o pendiente de aprobación.";
             }
         }
+                // --- Regla: no exceder días disponibles de vacaciones ---
+        // Solo aplica cuando se ENVÍA la solicitud y el tipo descuenta del banco.
+        if (
+            $accion === 'enviar' &&
+            $cantidadDias > 0 &&
+            $fechaInicio &&
+            $this->m->tipoImpactaBancoVacaciones($idTipo)
+        ) {
+            // Año de referencia: el año de la fecha de inicio
+            $anio = (int)substr($fechaInicio, 0, 4);
+            if ($anio < 2000 || $anio > 2100) {
+                $anio = (int)date('Y');
+            }
+
+            // Antigüedad al cierre del año
+            $ant = $this->antiguedadEnAnios($emp['fecha_ingreso'] ?? null, $anio);
+
+            // Días que le corresponden por antigüedad
+            $corr = $this->diasVacacionesPorAntiguedad($ant);
+
+            // Días ya aprobados que impactan vacaciones
+            if (method_exists($this->m, 'diasAprobadosVacacionesAnio')) {
+                $vacTom = (int)$this->m->diasAprobadosVacacionesAnio($idEmpleado, $anio);
+            } else {
+                // fallback a tu método histórico
+                $vacTom = (int)$this->m->diasTomadosAnio($idEmpleado, $anio);
+            }
+
+            // Días pendientes (solicitados y aún no definidos) que impactan vacaciones
+            $pend = (int)$this->m->diasPendientesAnio($idEmpleado, $anio);
+
+            // Días reales disponibles para vacaciones este año
+            $restVac = max($corr - $vacTom - $pend, 0);
+
+            if ($cantidadDias > $restVac) {
+                $err[] = sprintf(
+                    "No podés solicitar %d día(s) de vacaciones. Solo te quedan %d día(s) disponibles para el año %d.",
+                    $cantidadDias,
+                    $restVac,
+                    $anio
+                );
+            }
+        }
+
 
         if ($err) {
             return ['ok' => false, 'msg' => implode(' ', $err)];
@@ -156,6 +200,8 @@ class ControladorLicencias
 
         return ['ok' => true, 'id_licencia' => $idLic, 'msg' => 'Solicitud creada correctamente.'];
     }
+
+    
 
     // Lista para panel de RRHH
     public function rrhh_listarPendientes(): array
@@ -177,6 +223,20 @@ class ControladorLicencias
         return ['ok' => true, 'items' => $items];
     }
 
+    public function rrhh_listar_tipos(): array
+    {
+        if (!$this->esRRHH()) {
+            return ['ok' => false, 'msg' => 'No autorizado'];
+        }
+
+        // Usa el método del modelo que ya tenés
+        $tipos = $this->m->listarTipos();
+
+        return [
+            'ok'    => true,
+            'items' => $tipos
+        ];
+    }
 
 
     public function rrhh_resolver(): array
@@ -345,15 +405,41 @@ class ControladorLicencias
     {
         if (!$this->esRRHH()) return ['ok' => false, 'msg' => 'No autorizado'];
 
-        $desde = $_POST['desde'] ?? '';
-        $hasta = $_POST['hasta'] ?? '';
+        $desde  = $_POST['desde']  ?? '';
+        $hasta  = $_POST['hasta']  ?? '';
+        $tipo   = $_POST['tipo']   ?? '';
+        $estado = $_POST['estado'] ?? '';
+
         if ($desde === '' || $hasta === '' || $desde > $hasta) {
             return ['ok' => false, 'msg' => 'Rango de fechas inválido'];
         }
+
         $items = $this->m->reporteLicenciasPorPeriodo($desde, $hasta);
-        // Orden ya viene por fecha_inicio asc desde el modelo; si no, ordená aquí.
+
+        // Filtro por tipo (si viene)
+        if ($tipo !== '') {
+            $items = array_values(array_filter($items, function ($row) use ($tipo) {
+                if (isset($row['id_tipo']) && (string)$row['id_tipo'] === (string)$tipo) {
+                    return true;
+                }
+                return false;
+            }));
+        }
+
+        // Filtro por estado (si viene)
+        if ($estado !== '') {
+            $items = array_values(array_filter($items, function ($row) use ($estado) {
+                if (isset($row['id_estado']) && (string)$row['id_estado'] === (string)$estado) {
+                    return true;
+                }
+                return false;
+            }));
+        }
+
         return ['ok' => true, 'items' => $items];
     }
+
+
 
     public function rrhh_reporte_pdf(): void
     {
@@ -367,12 +453,40 @@ class ControladorLicencias
 
         $desde = $_GET['desde'] ?? '';
         $hasta = $_GET['hasta'] ?? '';
+        $tipo  = $_GET['tipo'] ?? '';
+        $estado = $_GET['estado'] ?? '';
+
         if ($desde === '' || $hasta === '' || $desde > $hasta) {
             echo 'Rango de fechas inválido';
             exit;
         }
 
         $items = $this->m->reporteLicenciasPorPeriodo($desde, $hasta);
+
+        // Mismo filtro por tipo que en el listado de pantalla
+        if ($tipo !== '') {
+            $items = array_values(array_filter($items, function ($row) use ($tipo) {
+                if (isset($row['id_tipo_licencia']) && (string)$row['id_tipo_licencia'] === (string)$tipo) {
+                    return true;
+                }
+                if (isset($row['id_tipo']) && (string)$row['id_tipo'] === (string)$tipo) {
+                    return true;
+                }
+                if (isset($row['tipo']) && (string)$row['tipo'] === (string)$tipo) {
+                    return true;
+                }
+                return false;
+            }));
+        }
+
+        if ($estado !== '') {
+            $items = array_values(array_filter($items, function ($row) use ($estado) {
+                if (isset($row['id_estado']) && (string)$row['id_estado'] === (string)$estado) {
+                    return true;
+                }
+                return false;
+            }));
+        }
 
         // Render HTML para PDF
         ob_start();
@@ -533,6 +647,19 @@ class ControladorLicencias
         ];
     }
 
+    public function rrhh_listar_estados(): array
+    {
+        if (!$this->esRRHH()) {
+            return ['ok' => false, 'msg' => 'No autorizado'];
+        }
+
+        $items = $this->m->listarEstados();
+
+        return [
+            'ok'    => true,
+            'items' => $items
+        ];
+    }
 
 
     public function emp_reporte_pdf(): void
@@ -699,6 +826,8 @@ if ((php_sapi_name() !== 'cli') && (isset($_POST['accion']) || isset($_GET['acci
     // RRHH (gestión de bandeja)
     else if ($accion === 'rrhh_listar')      send_json($ctrl->rrhh_listar());
     else if ($accion === 'rrhh_detalle')     send_json($ctrl->rrhh_detalle());
+    else if ($accion === 'rrhh_listar_tipos')   send_json($ctrl->rrhh_listar_tipos());
+    else if ($accion === 'rrhh_listar_estados') send_json($ctrl->rrhh_listar_estados());
     else if ($accion === 'rrhh_resolver')    send_json($ctrl->rrhh_resolver());
     // En tu router:
     else if ($accion === 'emp_reporte_listar') send_json($ctrl->emp_reporte_listar());

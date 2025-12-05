@@ -14,7 +14,7 @@
 
 
     
-    
+    <script src="turnos_empleado.js"></script>
 </body>
 
 </html>

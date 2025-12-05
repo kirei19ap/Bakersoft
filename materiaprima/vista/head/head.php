@@ -57,6 +57,12 @@ if (!isset($_SESSION['user'])) {
         <nav class="navegacion">
             <ul>
                 <li>
+                    <a class="" href="../../empleado/vista/index.php">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span>Portal del Empleado</span>
+                    </a>
+                </li>
+                <li>
                     <a class="active" href="index.php">
                         <ion-icon name="people-outline"></ion-icon>
                         <span>Materia Prima</span>
@@ -66,6 +72,12 @@ if (!isset($_SESSION['user'])) {
                     <a href="../../proveedores/vista/index.php">
                         <ion-icon name="git-pull-request-outline"></ion-icon>
                         <span>Proveedores</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="" href="../../productos/vista/index.php">
+                        <ion-icon name="pizza-outline"></ion-icon>
+                        <span>Productos</span>
                     </a>
                 </li>
                 <li>

@@ -1,5 +1,5 @@
 <?php
-include_once("head/headestadisticas.php");
+include_once("../../includes/head_app.php");
 require_once(__DIR__ . "/../controlador/controladoradmempleado.php");
 $obj = new ControladorAdmEmpleado();
 // admempleados/vista/buscador.php
@@ -131,7 +131,7 @@ $puestos    = $obj->traerPuesto();
 
 <!-- Encabezado -->
 <div class="titulo-contenido shadow-sm">
-    <h1 class="display-5">Reportes y Estadísticas</h1>
+    <h1 class="display-5">Estadísticas</h1>
 </div>
 
 <div class="contenido-principal">
@@ -281,32 +281,6 @@ $puestos    = $obj->traerPuesto();
         </div>
     </div>
     <!-- =================== FIN ESTADÍSTICAS DE LICENCIAS ==================== -->
-
-    <!-- Reportes disponibles -->
-    <div class="row my-4">
-        <div class="col-12">
-            <h3 class="mb-4">📊 Reportes disponibles</h3>
-        </div>
-
-        <div class="col-md-6 mb-3 d-flex justify-content-center">
-            <a id="btnExportPdfStats" class="btn btn-outline-danger btn-lg px-5" href="#" target="_blank">
-                📄 Nómina de Empleados (PDF)
-            </a>
-        </div>
-
-        <div class="col-md-6 mb-3 d-flex justify-content-center">
-            <a href="reporteLicencias.php" class="btn btn-outline-warning btn-lg px-5">
-                📄Listado integral de licencias
-            </a>
-        </div>
-
-
-        <!-- Espacio para futuros reportes (ej. Excel, distribución por puesto) -->
-        <div class="col-md-6 mb-3 d-flex justify-content-center">
-            <!-- Placeholder de otro reporte -->
-        </div>
-    </div>
-
 
 </div>
 

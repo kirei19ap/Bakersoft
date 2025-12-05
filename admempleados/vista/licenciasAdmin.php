@@ -1,5 +1,5 @@
 <?php
-include_once("head/headLicencias.php");
+include_once("../../includes/head_app.php");
 ?>
 <div class="contenido">
     <div class="titulo-contenido shadow-sm">
@@ -10,8 +10,8 @@ include_once("head/headLicencias.php");
             <div class="container-fluid">
                 <div class="card tabla-empleados">
                     <div class="card-header bg-light"><strong>Pendientes de aprobación</strong></div>
-                    <div class="card-body table-responsive">
-                        <div class="table-responsive">
+                    <div class="card-body">
+                        <div class="">
                             <table id="tablaRRHH" class="table table-striped table-hover table-bordered align-middle w-100">
                                 <thead class="table-light">
                                     <tr>

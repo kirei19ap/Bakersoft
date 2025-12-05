@@ -118,7 +118,13 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== "Admin RRHH") { // Encargad
                 <li>
                     <a class="active" href="estadisticas.php">
                         <ion-icon name="stats-chart-outline"></ion-icon>
-                        <span>Reportes y Estadísticas</span>
+                        <span>Estadísticas</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="" href="reportes.php">
+                        <ion-icon name="stats-chart-outline"></ion-icon>
+                        <span>Reportes</span>
                     </a>
                 </li>
             </ul>
