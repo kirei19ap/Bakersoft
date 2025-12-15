@@ -1,4 +1,5 @@
 <?php
+$currentPage = 'reportesUsuarios';
 include_once("../../includes/head_app.php");
 ?>
 

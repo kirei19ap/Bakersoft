@@ -74,7 +74,16 @@ if ($tipoPedido === 'mp') {
 
 <div class="contenido-principal">
 
-    <h1 class="mb-4">Buscar pedidos</h1>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h3 class="mb-0 text-muted">Buscador parametrizado para pedidos de materia prima y clientes.</h3>
+            <small class="text-muted">
+                Seleccione de los parametros disponibles para utilizarlo. Debe completar al menos un campo para realizar la búsqueda.
+            </small>
+        </div>
+        <div>
+        </div>
+    </div>
 
     <form method="GET" action="" class="form-busqueda mb-4">
 
@@ -237,72 +246,98 @@ if ($tipoPedido === 'mp') {
 
         <?php if ($tipoPedido === 'mp'): ?>
             <!-- Tabla de pedidos de materia prima -->
-            <div class="tabla-empleados">
-                <table id="MP-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                    <thead class="thead-dark">
-                        <tr class="text-center">
-                            <th>N° Pedido</th>
-                            <th>Fecha</th>
-                            <th>Proveedor</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($pedidos as $pedido): ?>
-                            <tr>
-                                <td><?= (int)$pedido['idPedido'] ?></td>
-                                <td><?= htmlspecialchars($pedido['fechaPedido']) ?></td>
-                                <td><?= htmlspecialchars($pedido['proveedor_nombre']) ?></td>
-                                <td><?= htmlspecialchars($pedido['estado']) ?></td>
-                                <td class="text-center">
-                                    <a class="btn btn-success verMPbtn"
-                                        title="Consultar pedido de materia prima"
-                                        href="verPedido.php?id=<?= (int)$pedido['idPedido'] ?>">
-                                        <ion-icon name="eye-outline"></ion-icon>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+            <div class="card">
+                <div class="card-body">
+                    <div class="tabla-empleados">
+                        <table id="MP-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                            <thead class="thead-dark">
+                                <tr class="text-center">
+                                    <th>N° Pedido</th>
+                                    <th>Fecha</th>
+                                    <th>Proveedor</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($pedidos as $pedido): ?>
+                                    <tr>
+                                        <td><?= (int)$pedido['idPedido'] ?></td>
+                                        <td><?= htmlspecialchars($pedido['fechaPedido']) ?></td>
+                                        <td><?= htmlspecialchars($pedido['proveedor_nombre']) ?></td>
+                                        <td><?= htmlspecialchars($pedido['estado']) ?></td>
+                                        <td class="text-center">
+                                            <a class="btn btn-success verMPbtn"
+                                                title="Consultar pedido de materia prima"
+                                                href="verPedido.php?id=<?= (int)$pedido['idPedido'] ?>">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
         <?php else: ?>
             <!-- Tabla de pedidos de clientes -->
-            <div class="tabla-empleados">
-                <table id="PedidosClientes-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                    <thead class="thead-dark">
-                        <tr class="text-center">
-                            <th>N° Pedido</th>
-                            <th>Fecha</th>
-                            <th>Cliente</th>
-                            <th>Estado</th>
-                            <th>Total</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($pedidos as $pedido): ?>
-                            <tr>
-                                <td><?= (int)$pedido['idPedidoVenta'] ?></td>
-                                <td><?= htmlspecialchars($pedido['fechaPedido']) ?></td>
-                                <td><?= htmlspecialchars($pedido['cliente'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($pedido['descEstado'] ?? '') ?></td>
-                                <td class="text-end">
-                                    $ <?= number_format($pedido['total'] ?? 0, 2, ',', '.') ?>
-                                </td>
-                                <td class="text-center">
-                                    <a class="btn btn-info"
-                                        title="Ver pedido de cliente"
-                                        href="/bakersoft/pedidos/vista/ver.php?id=<?= (int)$pedido['idPedidoVenta'] ?>">
-                                        <ion-icon name="eye-outline"></ion-icon>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+            <div class="card">
+                <div class="card-body">
+                    <div class="tabla-empleados">
+                        <table id="PedidosClientes-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                            <thead class="thead-dark">
+                                <tr class="text-center">
+                                    <th>N° Pedido</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($pedidos as $pedido): ?>
+                                    <tr>
+                                        <td class="text-center"><?= (int)$pedido['idPedidoVenta'] ?></td>
+                                        <td class="text-center"><?php $fechaRaw = $pedido['fechaPedido'] ?? null;
+                                            $fechaFormateada = '';
+
+                                            if ($fechaRaw) {
+                                                $dt = DateTime::createFromFormat('Y-m-d H:i:s', $fechaRaw);
+                                                if ($dt) {
+                                                    $fechaFormateada = $dt->format('d-m-Y');
+                                                } else {
+                                                    // fallback por si viene en otro formato
+                                                    $ts = strtotime($fechaRaw);
+                                                    $fechaFormateada = $ts ? date('d-m-Y', $ts) : $fechaRaw;
+                                                }
+                                            }
+
+                                            echo htmlspecialchars($fechaFormateada);
+                                            ?>
+
+
+                                        </td>
+                                        <td><?= htmlspecialchars($pedido['cliente'] ?? '') ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($pedido['descEstado'] ?? '') ?></td>
+                                        <td class="text-end">
+                                            $ <?= number_format($pedido['total'] ?? 0, 2, ',', '.') ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-info"
+                                                title="Ver pedido de cliente"
+                                                href="/bakersoft/pedidos/vista/ver.php?id=<?= (int)$pedido['idPedidoVenta'] ?>">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         <?php endif; ?>
 
@@ -318,100 +353,100 @@ require_once("foot/foot.php");
 
 <!-- Script chiquito para mostrar/ocultar filtros según el tipo de pedido -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const selectTipo      = document.getElementById('tipoPedido');
-    const filtrosMP       = document.getElementById('filtrosMP');
-    const filtrosClientes = document.getElementById('filtrosClientes');
-    const estadoMP        = document.getElementById('estadoMP');
-    const estadoClientes  = document.getElementById('estadoClientes');
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectTipo = document.getElementById('tipoPedido');
+        const filtrosMP = document.getElementById('filtrosMP');
+        const filtrosClientes = document.getElementById('filtrosClientes');
+        const estadoMP = document.getElementById('estadoMP');
+        const estadoClientes = document.getElementById('estadoClientes');
 
-    if (!selectTipo) return;
+        if (!selectTipo) return;
 
-    function actualizarFiltros() {
-        if (selectTipo.value === 'mp') {
-            // Mostrar filtros de MP
-            filtrosMP.classList.remove('d-none');
-            filtrosClientes.classList.add('d-none');
+        function actualizarFiltros() {
+            if (selectTipo.value === 'mp') {
+                // Mostrar filtros de MP
+                filtrosMP.classList.remove('d-none');
+                filtrosClientes.classList.add('d-none');
 
-            // Estado MP activo
-            estadoMP.disabled = false;
-            estadoMP.name = 'estado';
+                // Estado MP activo
+                estadoMP.disabled = false;
+                estadoMP.name = 'estado';
 
-            // Estado clientes desactivado
-            estadoClientes.disabled = true;
-            estadoClientes.name = 'estadoClientes';
-        } else {
-            // Mostrar filtros de clientes
-            filtrosClientes.classList.remove('d-none');
-            filtrosMP.classList.add('d-none');
+                // Estado clientes desactivado
+                estadoClientes.disabled = true;
+                estadoClientes.name = 'estadoClientes';
+            } else {
+                // Mostrar filtros de clientes
+                filtrosClientes.classList.remove('d-none');
+                filtrosMP.classList.add('d-none');
 
-            // Estado clientes activo
-            estadoClientes.disabled = false;
-            estadoClientes.name = 'estado';
+                // Estado clientes activo
+                estadoClientes.disabled = false;
+                estadoClientes.name = 'estado';
 
-            // Estado MP desactivado
-            estadoMP.disabled = true;
-            estadoMP.name = 'estadoMP';
-        }
-    }
-
-    // Inicializar según el valor cargado por PHP
-    actualizarFiltros();
-
-    // Cambiar al modificar el tipo de pedido
-    selectTipo.addEventListener('change', actualizarFiltros);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('.form-busqueda');
-    if (!form) return;
-
-    form.addEventListener('submit', function (e) {
-        const tipoPedido     = document.getElementById('tipoPedido').value;
-
-        const fechaDesde     = document.getElementById('fecha_desde').value.trim();
-        const fechaHasta     = document.getElementById('fecha_hasta').value.trim();
-
-        // MP
-        const proveedor      = document.getElementById('proveedor')?.value.trim();
-        const materia        = document.getElementById('materia')?.value.trim();
-        const estadoMP       = document.getElementById('estadoMP')?.value.trim();
-
-        // CLIENTES
-        const cliente        = document.getElementById('cliente')?.value.trim();
-        const estadoCli      = document.getElementById('estadoClientes')?.value.trim();
-
-        let hayFiltro = false;
-
-        // Fechas aplican a ambos
-        if (fechaDesde !== '' || fechaHasta !== '') {
-            hayFiltro = true;
-        }
-
-        if (tipoPedido === 'mp') {
-            if (proveedor || materia || estadoMP) {
-                hayFiltro = true;
+                // Estado MP desactivado
+                estadoMP.disabled = true;
+                estadoMP.name = 'estadoMP';
             }
         }
 
-        if (tipoPedido === 'clientes') {
-            if (cliente || estadoCli) {
-                hayFiltro = true;
-            }
-        }
+        // Inicializar según el valor cargado por PHP
+        actualizarFiltros();
 
-        if (!hayFiltro) {
-            e.preventDefault();
-
-            Swal.fire({
-                icon: 'info',
-                title: 'Sin filtros',
-                text: 'Debes completar al menos un criterio para realizar la búsqueda.',
-                confirmButtonText: 'Entendido'
-            });
-
-            return;
-        }
+        // Cambiar al modificar el tipo de pedido
+        selectTipo.addEventListener('change', actualizarFiltros);
     });
-});
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.form-busqueda');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            const tipoPedido = document.getElementById('tipoPedido').value;
+
+            const fechaDesde = document.getElementById('fecha_desde').value.trim();
+            const fechaHasta = document.getElementById('fecha_hasta').value.trim();
+
+            // MP
+            const proveedor = document.getElementById('proveedor')?.value.trim();
+            const materia = document.getElementById('materia')?.value.trim();
+            const estadoMP = document.getElementById('estadoMP')?.value.trim();
+
+            // CLIENTES
+            const cliente = document.getElementById('cliente')?.value.trim();
+            const estadoCli = document.getElementById('estadoClientes')?.value.trim();
+
+            let hayFiltro = false;
+
+            // Fechas aplican a ambos
+            if (fechaDesde !== '' || fechaHasta !== '') {
+                hayFiltro = true;
+            }
+
+            if (tipoPedido === 'mp') {
+                if (proveedor || materia || estadoMP) {
+                    hayFiltro = true;
+                }
+            }
+
+            if (tipoPedido === 'clientes') {
+                if (cliente || estadoCli) {
+                    hayFiltro = true;
+                }
+            }
+
+            if (!hayFiltro) {
+                e.preventDefault();
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sin filtros',
+                    text: 'Debes completar al menos un criterio para realizar la búsqueda.',
+                    confirmButtonText: 'Entendido'
+                });
+
+                return;
+            }
+        });
+    });
 </script>

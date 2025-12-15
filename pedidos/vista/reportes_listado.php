@@ -56,10 +56,6 @@ $totalFacturacion = array_reduce($pedidos, function($acum, $p) {
     <p class="mb-0 text-muted">
       Listado de pedidos filtrado por fechas y estado, con opción de exportar a PDF.
     </p>
-    <a href="index.php" class="btn btn-outline-secondary btn-sm">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-      Volver a pedidos
-    </a>
   </div>
 
   <div class="contenido">

@@ -636,12 +636,13 @@ class modeloTurnos
 
         // Si no hay solapamiento, actualizamos la asignación
         $sqlUpdate = "
-            UPDATE asignacionturnos
-            SET idEmpleado = :idEmpleadoNuevo,
+                UPDATE asignacionturnos
+                SET idEmpleado = :idEmpleadoNuevo,
+                estado     = 'Asignado',
                 fechaAlta  = NOW(),
                 usuarioAlta= :usuarioId
-            WHERE idAsignacion = :idAsignacion
-        ";
+                WHERE idAsignacion = :idAsignacion
+                ";
 
         $stmtUp = $this->PDO->prepare($sqlUpdate);
         $stmtUp->execute([
@@ -906,5 +907,117 @@ class modeloTurnos
         $row  = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return (int)($row['cant'] ?? 0);
+    }
+
+    public function obtenerOperariosActivos()
+    {
+        $sql = "
+        SELECT 
+            e.id_empleado,
+            e.legajo,
+            e.nombre,
+            e.apellido
+        FROM empleados e
+        LEFT JOIN puesto p ON p.idPuesto = e.id_puesto
+        WHERE e.estado = 'Activo'
+          AND e.eliminado = 0
+          AND (p.descrPuesto = 'Operario' OR p.descrPuesto IS NULL)
+        ORDER BY e.apellido, e.nombre
+    ";
+
+        $stmt = $this->PDO->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerListadoTurnosDetalle($idEmpleado, $fechaDesde, $fechaHasta, $estado = '')
+    {
+        $sql = "
+        SELECT 
+            a.fecha,
+            a.estado       AS estadoAsignacion,
+            t.nombre       AS nombreTurno,
+            t.horaDesde,
+            t.horaHasta,
+            e.legajo,
+            e.nombre       AS nombreEmpleado,
+            e.apellido     AS apellidoEmpleado
+        FROM asignacionturnos a
+        JOIN turnoslaborales t ON t.idTurno     = a.idTurno
+        JOIN empleados       e ON e.id_empleado = a.idEmpleado
+        WHERE a.fecha BETWEEN :desde AND :hasta
+    ";
+
+        $params = [
+            ':desde' => $fechaDesde,
+            ':hasta' => $fechaHasta
+        ];
+
+        if (!empty($idEmpleado)) {
+            $sql .= " AND a.idEmpleado = :idEmpleado";
+            $params[':idEmpleado'] = $idEmpleado;
+        }
+
+        if ($estado !== '') {
+            $sql .= " AND a.estado = :estado";
+            $params[':estado'] = $estado;
+        }
+
+        $sql .= "
+        ORDER BY 
+            a.fecha ASC,
+            t.horaDesde ASC,
+            e.apellido ASC,
+            e.nombre ASC
+    ";
+
+        $stmt = $this->PDO->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Distribución de estados en un rango de fechas
+    public function obtenerResumenEstadosTurnos($desde, $hasta)
+    {
+        $sql = "
+        SELECT 
+            estado,
+            COUNT(*) AS cantidad
+        FROM asignacionturnos
+        WHERE fecha BETWEEN :desde AND :hasta
+        GROUP BY estado
+    ";
+
+        $stmt = $this->PDO->prepare($sql);
+        $stmt->execute([
+            ':desde' => $desde,
+            ':hasta' => $hasta
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Tendencia semanal de turnos y finalizados (para cumplimiento)
+    public function obtenerTendenciaSemanalTurnos($desde, $hasta)
+    {
+        $sql = "
+        SELECT 
+            YEARWEEK(fecha, 3)           AS anioSemana,
+            MIN(fecha)                   AS fechaInicioSemana,
+            COUNT(*)                     AS totalTurnos,
+            SUM(estado = 'Finalizado')   AS turnosFinalizados
+        FROM asignacionturnos
+        WHERE fecha BETWEEN :desde AND :hasta
+        GROUP BY YEARWEEK(fecha, 3)
+        ORDER BY anioSemana ASC
+    ";
+
+        $stmt = $this->PDO->prepare($sql);
+        $stmt->execute([
+            ':desde' => $desde,
+            ':hasta' => $hasta
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

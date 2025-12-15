@@ -1,11 +1,21 @@
 <?php
+$currentPage = 'licencias';
 include_once("../../includes/head_app.php");
 ?>
+
 <div class="contenido">
     <div class="titulo-contenido shadow-sm">
         <h1 class="display-5">Gestión de licencias (RRHH)</h1>
     </div>
+
     <div class="contenido-principal">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h3 class="mb-0 text-muted">Listado de licencias pendientes de aprobación.</h3>
+            </div>
+            <div>
+            </div>
+        </div>
         <div class="contenido">
             <div class="container-fluid">
                 <div class="card tabla-empleados">
@@ -519,7 +529,7 @@ include_once("../../includes/head_app.php");
 
         }
 
-      
+
 
         // Click en botón "Ver" de la tabla
         tbody.addEventListener('click', async (e) => {

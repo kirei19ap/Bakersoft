@@ -243,7 +243,7 @@ class controladorPedidos
         }
     }
 
-        public function cambiarEstadoPedido()
+    public function cambiarEstadoPedido()
     {
         $idPedidoVenta = (int)($_POST['idPedidoVenta'] ?? 0);
         $estadoActual  = (int)($_POST['estadoActual'] ?? 0);
@@ -361,7 +361,7 @@ class controladorPedidos
         echo json_encode($data);
     }
 
-        /**
+    /**
      * Devuelve un listado de pedidos filtrado por fechas y estado (para reportes).
      * $desde y $hasta en formato 'Y-m-d' (solo fecha).
      */
@@ -384,7 +384,7 @@ class controladorPedidos
         return $this->modelo->listarPedidosFiltrados($desdeCompleto, $hastaCompleto, $estado);
     }
 
-        /**
+    /**
      * Devuelve el resumen de stock de MP para un pedido (usa modelo->evaluarStockPedido).
      */
     public function obtenerResumenStockPedido(int $idPedidoVenta): array
@@ -392,7 +392,73 @@ class controladorPedidos
         return $this->modelo->evaluarStockPedido($idPedidoVenta);
     }
 
+    /**
+     * Registra un cliente nuevo desde el formulario de pedido (AJAX).
+     * No crea pedido, sólo cliente.
+     */
+    public function registrarClienteDesdePedido()
+    {
+        header('Content-Type: application/json; charset=utf-8');
 
+        $nombre   = trim($_POST['clienteNombre']   ?? '');
+        $telefono = trim($_POST['clienteTelefono'] ?? '');
+        $calle    = trim($_POST['clienteCalle']    ?? '');
+        $altura   = trim($_POST['clienteAltura']   ?? '');
+        $email    = trim($_POST['clienteEmail']    ?? '');
+
+        // Validaciones de negocio: nombre, dirección y teléfono obligatorios
+        if ($nombre === '' || $telefono === '' || $calle === '' || $altura === '') {
+            echo json_encode([
+                'ok'    => false,
+                'error' => 'Nombre, teléfono, calle y altura del cliente son obligatorios para registrarlo.'
+            ]);
+            return;
+        }
+
+        $cliente = [
+            'nombre'    => $nombre,
+            'email'     => $email,
+            'telefono'  => $telefono,
+            'calle'     => $calle,
+            'altura'    => (int)$altura,
+            'provincia' => 1,
+            'localidad' => 1,
+            'estado'    => 'Activo',
+        ];
+
+        $resultado = $this->modelo->crearClienteBasico($cliente);
+
+        if ($resultado['ok']) {
+            echo json_encode([
+                'ok'        => true,
+                'idCliente' => $resultado['idCliente'],
+                'mensaje'   => 'Cliente registrado correctamente.'
+            ]);
+        } else {
+            echo json_encode([
+                'ok'    => false,
+                'error' => 'Error al registrar el cliente: ' . $resultado['error']
+            ]);
+        }
+    }
+
+    public function apiTopProductos()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $hoy    = date('Y-m-d');
+        $hace30 = date('Y-m-d', strtotime('-30 days'));
+
+        $desde = $_GET['desde'] ?? $hace30;
+        $hasta = $_GET['hasta'] ?? $hoy;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+
+        $desdeCompleto = $desde . ' 00:00:00';
+        $hastaCompleto = $hasta . ' 23:59:59';
+
+        $data = $this->modelo->topProductosVendidos($desdeCompleto, $hastaCompleto, $limit);
+        echo json_encode($data);
+    }
 }
 
 /**
@@ -410,6 +476,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
             break;
         case 'cambiarEstado':
             $ctrl->cambiarEstadoPedido();
+            break;
+        case 'registrarClienteDesdePedido':
+            $ctrl->registrarClienteDesdePedido();
+            break;
+        case 'resumenProductos':
+            $ctrl->apiTopProductos();
             break;
     }
 }
@@ -435,6 +507,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion'])) {
 
         case 'resumenFacturacion':
             $ctrl->apiResumenFacturacionPorDia();
+            break;
+        case 'resumenProductos':
+            $ctrl->apiTopProductos();
             break;
     }
 }

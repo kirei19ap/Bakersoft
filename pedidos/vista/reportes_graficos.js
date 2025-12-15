@@ -1,9 +1,14 @@
+// reportes_graficos.js
+
 document.addEventListener('DOMContentLoaded', function () {
     const canvasEstados = document.getElementById('chartEstadosPedidos');
     const canvasPorDia = document.getElementById('chartPedidosPorDia');
     const canvasFacturacion = document.getElementById('chartFacturacionPorDia');
 
-    // Si no estamos en la pantalla de reportes, no hacemos nada
+    // Canvas opcional (si lo agregaste en el front)
+    const canvasTopProductos = document.getElementById('chartProductosMasVendidos');
+
+    // Si no estamos en la pantalla de reportes principal, no hacemos nada
     if (!canvasEstados || !canvasPorDia || !canvasFacturacion) {
         return;
     }
@@ -16,19 +21,27 @@ document.addEventListener('DOMContentLoaded', function () {
     let chartPorDia = null;
     let chartFacturacion = null;
 
-    function cargarReportes() {
-        const desde = inputDesde ? inputDesde.value : '';
-        const hasta = inputHasta ? inputHasta.value : '';
+    function getRangoFechas() {
+        const desde = inputDesde ? (inputDesde.value || '') : '';
+        const hasta = inputHasta ? (inputHasta.value || '') : '';
+        return { desde, hasta };
+    }
 
+    function buildParams(desde, hasta) {
         const params = new URLSearchParams();
         if (desde) params.append('desde', desde);
         if (hasta) params.append('hasta', hasta);
+        return params;
+    }
+
+    function cargarReportes() {
+        const { desde, hasta } = getRangoFechas();
+        const params = buildParams(desde, hasta);
 
         // --- 1) Pedidos por estado ---
         fetch(`../controlador/controladorPedidos.php?accion=resumenEstados&${params.toString()}`)
             .then(r => r.json())
             .then(data => {
-
                 const labels = data.map(item => item.descEstado || 'Sin estado');
                 const valores = data.map(item => parseInt(item.cantidad || 0, 10));
 
@@ -56,9 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: {
-                                    position: 'bottom'
-                                },
+                                legend: { position: 'bottom' },
                                 tooltip: {
                                     callbacks: {
                                         label: function (context) {
@@ -69,17 +80,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                     }
                                 }
                             },
-                            layout: {
-                                padding: 10
-                            }
+                            layout: { padding: 10 }
                         }
                     });
                 }
             })
-
-            .catch(err => {
-                console.error('Error resumenEstados:', err);
-            });
+            .catch(err => console.error('Error resumenEstados:', err));
 
         // --- 2) Pedidos por día ---
         fetch(`../controlador/controladorPedidos.php?accion=resumenPorDia&${params.toString()}`)
@@ -107,22 +113,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    precision: 0
-                                }
+                                y: { beginAtZero: true, precision: 0 }
                             },
-                            layout: {
-                                padding: 10
-                            }
+                            layout: { padding: 10 }
                         }
                     });
-
                 }
             })
-            .catch(err => {
-                console.error('Error resumenPorDia:', err);
-            });
+            .catch(err => console.error('Error resumenPorDia:', err));
 
         // --- 3) Facturación por día ---
         fetch(`../controlador/controladorPedidos.php?accion=resumenFacturacion&${params.toString()}`)
@@ -148,31 +146,97 @@ document.addEventListener('DOMContentLoaded', function () {
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            },
-                            layout: {
-                                padding: 10
-                            }
+                            scales: { y: { beginAtZero: true } },
+                            layout: { padding: 10 }
                         }
                     });
-
                 }
             })
-            .catch(err => {
-                console.error('Error resumenFacturacion:', err);
-            });
+            .catch(err => console.error('Error resumenFacturacion:', err));
+    }
+
+    async function cargarTopProductos(desde, hasta) {
+        // Si no existe el canvas, igual puede existir la tabla; no rompemos nada.
+        const url = `../controlador/controladorPedidos.php?accion=resumenProductos&desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}&limit=10`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        const labels = data.map(x => x.nombre);
+        const cantidades = data.map(x => parseFloat(x.cantidad_total || 0));
+        const facturacion = data.map(x => parseFloat(x.facturacion_total || 0));
+
+        // Tabla (si existe)
+        const tbody = document.querySelector('#tablaTopProductos tbody');
+        if (tbody) {
+            if (!data.length) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-muted text-center">Sin resultados para el rango seleccionado.</td></tr>`;
+            } else {
+                tbody.innerHTML = data.map(x => {
+                    const cant = (x.cantidad_total ?? '0').toString();
+                    const fac = Number(x.facturacion_total || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    return `
+                        <tr>
+                            <td>${x.nombre}</td>
+                            <td class="text-end">${cant} ${x.unidad_medida || ''}</td>
+                            <td class="text-end">$ ${fac}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Chart (si existe el canvas)
+        if (!canvasTopProductos) return;
+
+        if (window._chartTopProductos) {
+            window._chartTopProductos.destroy();
+        }
+
+        window._chartTopProductos = new Chart(canvasTopProductos, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Cantidad vendida',
+                    data: cantidades
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: (context) => {
+                                const idx = context.dataIndex;
+                                const fac = Number(facturacion[idx] || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                return `Facturación: $ ${fac}`;
+                            }
+                        }
+                    }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    function cargarTodo() {
+        const { desde, hasta } = getRangoFechas();
+        cargarReportes();
+        // Top productos sólo si agregaste el bloque (tabla o canvas)
+        const existeTop = document.getElementById('tablaTopProductos') || document.getElementById('chartProductosMasVendidos');
+        if (existeTop) {
+            cargarTopProductos(desde, hasta);
+        }
     }
 
     // Cargar al entrar
-    cargarReportes();
+    cargarTodo();
 
     // Recalcular al aplicar filtros
     if (btnFiltros) {
         btnFiltros.addEventListener('click', function () {
-            cargarReportes();
+            cargarTodo();
         });
     }
 });

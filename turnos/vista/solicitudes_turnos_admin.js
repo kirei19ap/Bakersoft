@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn.classList.contains('btn-aprobar')) {
             Swal.fire({
                 title: '¿Aprobar solicitud?',
-                text: 'El turno del empleado se marcará como cancelado.',
+                text: 'El turno del empleado se marcará para ser reasignado.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, aprobar',
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn.classList.contains('btn-rechazar')) {
             Swal.fire({
                 title: '¿Rechazar solicitud?',
-                text: 'El turno se mantendrá asignado al empleado.',
+                text: 'El turno se mantendrá asignado al empleado actual.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, rechazar',

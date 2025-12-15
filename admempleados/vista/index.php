@@ -1,4 +1,5 @@
 <?php
+$currentPage = 'empleados';
 include_once("../../includes/head_app.php");
 
 require_once(__DIR__ . "/../controlador/controladoradmempleado.php");
@@ -41,7 +42,9 @@ $locMap = $obj->localidadesMap(); // id_localidad => nombre
 
     <!-- Botonera -->
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <div></div>
+        <div>
+            <h3 class="mb-0 text-muted">Listado de empleados de la empresa.</h3>
+        </div>
         <div>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoEmpleado">
                 Registrar Empleado
@@ -77,153 +80,157 @@ $locMap = $obj->localidadesMap(); // id_localidad => nombre
 
     <!-- Tabla -->
     <div class="contenido">
-        <div class="tabla-empleados">
-            <table id="Empleados-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th style="display:none">ID</th>
-                        <th>Apellido, Nombre</th>
-                        <th>DNI</th>
-                        <th>Legajo</th>
-                        <th>Genero</th>
-                        <th>Puesto</th>
-                        <th>Fecha ingreso</th>
-                        <th>Estado</th>
-                        <th style="display:none">Email</th>
-                        <th style="display:none">Teléfono</th>
-                        <th style="display:none">Dirección</th>
-                        <th style="display:none">EstadoRaw</th>
-                        <th style="display:none">UsuarioID</th>
-                        <th style="display:none">ProvinciaID</th>
-                        <th style="display:none">LocalidadID</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($filas as $r): ?>
-                        <tr>
-                            <td style="display:none"><?= (int)$r['id_empleado'] ?></td>
-                            <td><?= htmlspecialchars($r['apellido'] . ", " . $r['nombre']) ?></td>
-                            <td><?= htmlspecialchars($r['dni']) ?></td>
-                            <td><?= htmlspecialchars($r['legajo'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($r['sexo'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($r['descrPuesto']) ?></td>
-                            <td><?= htmlspecialchars($r['fecha_ingreso']) ?></td>
-                            <td>
-                                <?php if ($r['estado'] === 'Activo'): ?>
-                                    <span class="badge bg-success">Activo</span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">Inactivo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td style="display:none"><?= htmlspecialchars($r['email'] ?? '') ?></td>
-                            <td style="display:none"><?= htmlspecialchars($r['telefono'] ?? '') ?></td>
-                            <td style="display:none"><?= htmlspecialchars($r['direccion'] ?? '') ?></td>
-                            <td style="display:none"><?= htmlspecialchars($r['estado']) ?></td>
-                            <td style="display:none"><?= htmlspecialchars($r['usuario_id']) ?></td>
-                            <td style="display:none"><?= htmlspecialchars($r['provincia']) ?></td>
-                            <td style="display:none"><?= htmlspecialchars($locName) ?></td>
-                            <td class="text-center">
-                                <!-- Ver -->
-                                <?php
-                                $provNombre = $provMap[(int)$r['provincia']] ?? '';
-                                //$locNombre  = $locMap[(int)$r['localidad']] ?? '';
-                                $usuarioId    = (int)($r['usuario_id'] ?? 0);
-                                $usuarioLabel = $r['usuario_label'] ?? '';
-                                $puestoId     = (int)($r['puesto_id'] ?? $r['idPuesto'] ?? 0);
-                                $puestoNombre = (string)($r['descrPuesto'] ?? '');
-                                $estadoCivilId  = (int)($r['estado_civil_id'] ?? 0);
-                                $estadoCivilTxt = (string)($r['estado_civil'] ?? '');
-                                $provId   = (int)($r['provincia'] ?? $r['provincia_id'] ?? 0);
-                                $locId    = (int)($r['localidad_id'] ?? $r['localidad'] ?? 0);               // ✅ ID
-                                $locName  = (string)($r['localidad_nombre'] ?? ''); // ✅ Nombre (por si querés mostrar o usar de fallback)
-                                ?>
-                                <button type="button" class="btn btn-info btn-sm verEmpleado"
-                                    data-bs-toggle="modal" data-bs-target="#verEmpleado"
-                                    data-id="<?= (int)$r['id_empleado'] ?>"
-                                    data-nombre="<?= htmlspecialchars($r['nombre']) ?>"
-                                    data-apellido="<?= htmlspecialchars($r['apellido']) ?>"
-                                    data-dni="<?= htmlspecialchars($r['dni']) ?>"
-                                    data-sexo="<?= htmlspecialchars($r['sexo'] ?? '') ?>"
-                                    data-fechanac="<?= htmlspecialchars($r['fecha_nac'] ?? '') ?>"
-                                    data-cuil="<?= htmlspecialchars($r['cuil'] ?? '') ?>"
-                                    data-legajo="<?= htmlspecialchars($r['legajo'] ?? '') ?>"
-                                    data-fecha="<?= htmlspecialchars($r['fecha_ingreso']) ?>"
-                                    data-estado="<?= htmlspecialchars($r['estado']) ?>"
-                                    data-email="<?= htmlspecialchars($r['email'] ?? '') ?>"
-                                    data-telefono="<?= htmlspecialchars($r['telefono'] ?? '') ?>"
-                                    data-direccion="<?= htmlspecialchars($r['direccion'] ?? '') ?>"
-                                    data-usuario="<?= $usuarioId ?>"
-                                    data-usuario-nombre="<?= htmlspecialchars($usuarioLabel) ?>"
-                                    data-provincia-nombre="<?= htmlspecialchars($provNombre) ?>"
-                                    data-provincia="<?= $provId ?>"
-                                    data-localidad="<?= $locId ?>"
-                                    data-localidad-nombre="<?= htmlspecialchars($locName, ENT_QUOTES, 'UTF-8') ?>"
-                                    data-puesto-id="<?= $puestoId ?>"
-                                    data-puesto="<?= htmlspecialchars($puestoNombre) ?>"
-                                    data-estado-civil-id="<?= $estadoCivilId ?: '' ?>"
-                                    data-estado-civil="<?= htmlspecialchars($estadoCivilTxt, ENT_QUOTES, 'UTF-8') ?>"
+        <div class="card">
+            <div class="card-body">
+                <div class="tabla-empleados">
+                    <table id="Empleados-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="display:none">ID</th>
+                                <th>Apellido, Nombre</th>
+                                <th>DNI</th>
+                                <th>Legajo</th>
+                                <th>Genero</th>
+                                <th>Puesto</th>
+                                <th>Fecha ingreso</th>
+                                <th>Estado</th>
+                                <th style="display:none">Email</th>
+                                <th style="display:none">Teléfono</th>
+                                <th style="display:none">Dirección</th>
+                                <th style="display:none">EstadoRaw</th>
+                                <th style="display:none">UsuarioID</th>
+                                <th style="display:none">ProvinciaID</th>
+                                <th style="display:none">LocalidadID</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($filas as $r): ?>
+                                <tr>
+                                    <td style="display:none"><?= (int)$r['id_empleado'] ?></td>
+                                    <td><?= htmlspecialchars($r['apellido'] . ", " . $r['nombre']) ?></td>
+                                    <td><?= htmlspecialchars($r['dni']) ?></td>
+                                    <td><?= htmlspecialchars($r['legajo'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($r['sexo'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($r['descrPuesto']) ?></td>
+                                    <td><?= htmlspecialchars($r['fecha_ingreso']) ?></td>
+                                    <td>
+                                        <?php if ($r['estado'] === 'Activo'): ?>
+                                            <span class="badge bg-success">Activo</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td style="display:none"><?= htmlspecialchars($r['email'] ?? '') ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($r['telefono'] ?? '') ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($r['direccion'] ?? '') ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($r['estado']) ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($r['usuario_id']) ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($r['provincia']) ?></td>
+                                    <td style="display:none"><?= htmlspecialchars($locName) ?></td>
+                                    <td class="text-center">
+                                        <!-- Ver -->
+                                        <?php
+                                        $provNombre = $provMap[(int)$r['provincia']] ?? '';
+                                        //$locNombre  = $locMap[(int)$r['localidad']] ?? '';
+                                        $usuarioId    = (int)($r['usuario_id'] ?? 0);
+                                        $usuarioLabel = $r['usuario_label'] ?? '';
+                                        $puestoId     = (int)($r['puesto_id'] ?? $r['idPuesto'] ?? 0);
+                                        $puestoNombre = (string)($r['descrPuesto'] ?? '');
+                                        $estadoCivilId  = (int)($r['estado_civil_id'] ?? 0);
+                                        $estadoCivilTxt = (string)($r['estado_civil'] ?? '');
+                                        $provId   = (int)($r['provincia'] ?? $r['provincia_id'] ?? 0);
+                                        $locId    = (int)($r['localidad_id'] ?? $r['localidad'] ?? 0);               // ✅ ID
+                                        $locName  = (string)($r['localidad_nombre'] ?? ''); // ✅ Nombre (por si querés mostrar o usar de fallback)
+                                        ?>
+                                        <button type="button" class="btn btn-info btn-sm verEmpleado"
+                                            data-bs-toggle="modal" data-bs-target="#verEmpleado"
+                                            data-id="<?= (int)$r['id_empleado'] ?>"
+                                            data-nombre="<?= htmlspecialchars($r['nombre']) ?>"
+                                            data-apellido="<?= htmlspecialchars($r['apellido']) ?>"
+                                            data-dni="<?= htmlspecialchars($r['dni']) ?>"
+                                            data-sexo="<?= htmlspecialchars($r['sexo'] ?? '') ?>"
+                                            data-fechanac="<?= htmlspecialchars($r['fecha_nac'] ?? '') ?>"
+                                            data-cuil="<?= htmlspecialchars($r['cuil'] ?? '') ?>"
+                                            data-legajo="<?= htmlspecialchars($r['legajo'] ?? '') ?>"
+                                            data-fecha="<?= htmlspecialchars($r['fecha_ingreso']) ?>"
+                                            data-estado="<?= htmlspecialchars($r['estado']) ?>"
+                                            data-email="<?= htmlspecialchars($r['email'] ?? '') ?>"
+                                            data-telefono="<?= htmlspecialchars($r['telefono'] ?? '') ?>"
+                                            data-direccion="<?= htmlspecialchars($r['direccion'] ?? '') ?>"
+                                            data-usuario="<?= $usuarioId ?>"
+                                            data-usuario-nombre="<?= htmlspecialchars($usuarioLabel) ?>"
+                                            data-provincia-nombre="<?= htmlspecialchars($provNombre) ?>"
+                                            data-provincia="<?= $provId ?>"
+                                            data-localidad="<?= $locId ?>"
+                                            data-localidad-nombre="<?= htmlspecialchars($locName, ENT_QUOTES, 'UTF-8') ?>"
+                                            data-puesto-id="<?= $puestoId ?>"
+                                            data-puesto="<?= htmlspecialchars($puestoNombre) ?>"
+                                            data-estado-civil-id="<?= $estadoCivilId ?: '' ?>"
+                                            data-estado-civil="<?= htmlspecialchars($estadoCivilTxt, ENT_QUOTES, 'UTF-8') ?>"
 
-                                    title="Ver">
-                                    <ion-icon name="eye-outline"></ion-icon>
+                                            title="Ver">
+                                            <ion-icon name="eye-outline"></ion-icon>
 
-                                </button>
-
-
-
-                                <!-- Editar -->
-                                <button type="button" class="btn btn-primary btn-sm editEmpleado"
-                                    data-bs-toggle="modal" data-bs-target="#editarEmpleado"
-                                    data-id="<?= (int)$r['id_empleado'] ?>"
-                                    data-nombre="<?= htmlspecialchars($r['nombre']) ?>"
-                                    data-apellido="<?= htmlspecialchars($r['apellido']) ?>"
-                                    data-dni="<?= htmlspecialchars($r['dni']) ?>"
-                                    data-sexo="<?= htmlspecialchars($r['sexo'] ?? '') ?>"
-                                    data-fechanac="<?= htmlspecialchars($r['fecha_nac'] ?? '') ?>"
-                                    data-cuil="<?= htmlspecialchars($r['cuil'] ?? '') ?>"
-                                    data-legajo="<?= htmlspecialchars($r['legajo'] ?? '') ?>"
-                                    data-fecha="<?= htmlspecialchars($r['fecha_ingreso']) ?>"
-                                    data-estado="<?= htmlspecialchars($r['estado']) ?>"
-                                    data-email="<?= htmlspecialchars($r['email'] ?? '') ?>"
-                                    data-telefono="<?= htmlspecialchars($r['telefono'] ?? '') ?>"
-                                    data-direccion="<?= htmlspecialchars($r['direccion'] ?? '') ?>"
-                                    data-usuario="<?= $usuarioId ?>"
-                                    data-usuario-nombre="<?= htmlspecialchars($usuarioLabel) ?>"
-                                    data-provincia="<?= (int)$r['provincia'] ?>"
-                                    data-localidad="<?= $locId ?>"
-                                    data-localidad-nombre="<?= htmlspecialchars($locName) ?>"
-                                    data-puesto-id="<?= $puestoId ?>"
-                                    data-puesto="<?= htmlspecialchars($puestoNombre) ?>"
-                                    data-estado-civil-id="<?= $estadoCivilId ?: '' ?>"
-                                    data-estado-civil="<?= htmlspecialchars($estadoCivilTxt, ENT_QUOTES, 'UTF-8') ?>"
-
-                                    title="Editar">
-                                    <ion-icon name="create-outline"></ion-icon>
-
-                                </button>
+                                        </button>
 
 
-                                <!-- Activar / Inactivar -->
-                                <?php
-                                $esActivo = ($r['estado'] === 'Activo');
-                                $btnClase = $esActivo ? 'btn-danger' : 'btn-warning';
-                                $icono    = $esActivo ? 'person-remove-outline' : 'person-add-outline';
-                                $btnTexto = $esActivo ? 'Inactivar' : 'Activar'; // accesibilidad
-                                ?>
-                                <button class="btn <?= $btnClase ?> btn-sm btnToggleEstado"
-                                    data-id="<?= (int)$r['id_empleado'] ?>"
-                                    data-apynom="<?= htmlspecialchars($r['apellido'] . ', ' . $r['nombre']) ?>"
-                                    data-estado="<?= htmlspecialchars($r['estado']) ?>"
-                                    data-bs-toggle="modal" data-bs-target="#cambiarEstadoModal"
-                                    title="<?= $btnTexto ?>">
-                                    <ion-icon name="<?= $icono ?>" aria-hidden="true"></ion-icon>
-                                    <span class="visually-hidden"><?= $btnTexto ?></span>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+
+                                        <!-- Editar -->
+                                        <button type="button" class="btn btn-primary btn-sm editEmpleado"
+                                            data-bs-toggle="modal" data-bs-target="#editarEmpleado"
+                                            data-id="<?= (int)$r['id_empleado'] ?>"
+                                            data-nombre="<?= htmlspecialchars($r['nombre']) ?>"
+                                            data-apellido="<?= htmlspecialchars($r['apellido']) ?>"
+                                            data-dni="<?= htmlspecialchars($r['dni']) ?>"
+                                            data-sexo="<?= htmlspecialchars($r['sexo'] ?? '') ?>"
+                                            data-fechanac="<?= htmlspecialchars($r['fecha_nac'] ?? '') ?>"
+                                            data-cuil="<?= htmlspecialchars($r['cuil'] ?? '') ?>"
+                                            data-legajo="<?= htmlspecialchars($r['legajo'] ?? '') ?>"
+                                            data-fecha="<?= htmlspecialchars($r['fecha_ingreso']) ?>"
+                                            data-estado="<?= htmlspecialchars($r['estado']) ?>"
+                                            data-email="<?= htmlspecialchars($r['email'] ?? '') ?>"
+                                            data-telefono="<?= htmlspecialchars($r['telefono'] ?? '') ?>"
+                                            data-direccion="<?= htmlspecialchars($r['direccion'] ?? '') ?>"
+                                            data-usuario="<?= $usuarioId ?>"
+                                            data-usuario-nombre="<?= htmlspecialchars($usuarioLabel) ?>"
+                                            data-provincia="<?= (int)$r['provincia'] ?>"
+                                            data-localidad="<?= $locId ?>"
+                                            data-localidad-nombre="<?= htmlspecialchars($locName) ?>"
+                                            data-puesto-id="<?= $puestoId ?>"
+                                            data-puesto="<?= htmlspecialchars($puestoNombre) ?>"
+                                            data-estado-civil-id="<?= $estadoCivilId ?: '' ?>"
+                                            data-estado-civil="<?= htmlspecialchars($estadoCivilTxt, ENT_QUOTES, 'UTF-8') ?>"
+
+                                            title="Editar">
+                                            <ion-icon name="create-outline"></ion-icon>
+
+                                        </button>
+
+
+                                        <!-- Activar / Inactivar -->
+                                        <?php
+                                        $esActivo = ($r['estado'] === 'Activo');
+                                        $btnClase = $esActivo ? 'btn-danger' : 'btn-warning';
+                                        $icono    = $esActivo ? 'person-remove-outline' : 'person-add-outline';
+                                        $btnTexto = $esActivo ? 'Inactivar' : 'Activar'; // accesibilidad
+                                        ?>
+                                        <button class="btn <?= $btnClase ?> btn-sm btnToggleEstado"
+                                            data-id="<?= (int)$r['id_empleado'] ?>"
+                                            data-apynom="<?= htmlspecialchars($r['apellido'] . ', ' . $r['nombre']) ?>"
+                                            data-estado="<?= htmlspecialchars($r['estado']) ?>"
+                                            data-bs-toggle="modal" data-bs-target="#cambiarEstadoModal"
+                                            title="<?= $btnTexto ?>">
+                                            <ion-icon name="<?= $icono ?>" aria-hidden="true"></ion-icon>
+                                            <span class="visually-hidden"><?= $btnTexto ?></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 

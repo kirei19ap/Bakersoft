@@ -75,6 +75,43 @@ class modeloPedidos
         ]);
     }
 
+    /**
+     * Crea un cliente básico (sin pedido) y devuelve el id insertado.
+     */
+    public function crearClienteBasico(array $cliente)
+    {
+        try {
+            $sql = "INSERT INTO clientes
+                    (nombre, email, telefono, calle, altura, provincia, localidad, estado)
+                    VALUES
+                    (:nombre, :email, :telefono, :calle, :altura, :provincia, :localidad, :estado)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':nombre'    => $cliente['nombre'],
+                ':email'     => $cliente['email'],
+                ':telefono'  => $cliente['telefono'],
+                ':calle'     => $cliente['calle'],
+                ':altura'    => $cliente['altura'],
+                ':provincia' => $cliente['provincia'] ?? 1,
+                ':localidad' => $cliente['localidad'] ?? 1,
+                ':estado'    => $cliente['estado'] ?? 'Activo',
+            ]);
+
+            $idCliente = $this->pdo->lastInsertId();
+
+            return [
+                'ok'        => true,
+                'idCliente' => (int)$idCliente
+            ];
+        } catch (Exception $e) {
+            return [
+                'ok'    => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
 
     /**
      * Registra cliente + pedido + detalle en una sola transacción.
@@ -594,7 +631,7 @@ class modeloPedidos
         ];
     }
 
-        /**
+    /**
      * Pasa el pedido a estado PREPARADO (90) descontando las materias primas
      * utilizadas, todo dentro de una transacción.
      *
@@ -676,7 +713,6 @@ class modeloPedidos
             // 5) Todo OK
             $this->pdo->commit();
             return true;
-
         } catch (Exception $e) {
             // Ante cualquier error, revertimos
             if ($this->pdo->inTransaction()) {
@@ -687,4 +723,126 @@ class modeloPedidos
         }
     }
 
+    /**
+     * Devuelve los pedidos de HOY en un estado específico.
+     * Se apoya en listarPedidosFiltrados para mantener la lógica central en un solo lugar.
+     *
+     * @param int $estado Código del estado (ej: 80 = En Preparación)
+     * @return array
+     */
+    public function obtenerPedidosHoyPorEstado(int $estado): array
+    {
+        // Rango de "hoy" según fechaPedido
+        $desde = date('Y-m-d') . ' 00:00:00';
+        $hasta = date('Y-m-d') . ' 23:59:59';
+
+        // Reutilizamos la función de reportes
+        return $this->listarPedidosFiltrados($desde, $hasta, $estado);
+    }
+
+    /**
+     * Devuelve pedidos en estado específico sin limitar por fecha.
+     * @param int $estado Código de estado (ej: 80 = En Preparación)
+     * @param int $limite Cantidad máxima de pedidos
+     * @return array
+     */
+    public function obtenerPedidosPorEstado(int $estado, int $limite = 50): array
+    {
+        $sql = "SELECT 
+                pv.idPedidoVenta,
+                pv.fechaPedido,
+                pv.total,
+                pv.estado,
+                c.nombre AS cliente,
+                e.descEstado
+            FROM pedidoventa pv
+            INNER JOIN clientes c ON pv.idCliente = c.id_cliente
+            LEFT JOIN estadospedidos e ON pv.estado = e.codEstado
+            WHERE pv.estado = :estado
+            ORDER BY pv.fechaPedido DESC, pv.idPedidoVenta DESC
+            LIMIT :limite";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':estado', $estado, PDO::PARAM_INT);
+        $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    /**
+     * Atajo específico para "En Preparación" sin filtro de fecha.
+     */
+    public function obtenerPedidosEnPreparacion(): array
+    {
+        return $this->obtenerPedidosPorEstado(80, 50);
+    }
+
+    public function obtenerPedidosPreparados(): array
+    {
+        return $this->obtenerPedidosPorEstado(90, 50);
+    }
+
+    public function obtenerPedidosPreparadosHoy(): array
+    {
+        $desde = date('Y-m-d') . ' 00:00:00';
+        $hasta = date('Y-m-d') . ' 23:59:59';
+
+        return $this->listarPedidosFiltrados($desde, $hasta, 90);
+    }
+
+    public function obtenerPedidosEntregados(): array
+    {
+        return $this->obtenerPedidosPorEstado(100, 50);
+    }
+
+    public function obtenerPedidosEntregadosHoy(): array
+    {
+        $desde = date('Y-m-d') . ' 00:00:00';
+        $hasta = date('Y-m-d') . ' 23:59:59';
+
+        return $this->listarPedidosFiltrados($desde, $hasta, 100);
+    }
+
+    public function topProductosVendidos(string $desde, string $hasta, int $limit = 10)
+    {
+        $limit = max(1, min($limit, 50)); // seguridad
+
+        $sql = "SELECT
+              p.idProducto,
+              p.nombre,
+              p.unidad_medida,
+              SUM(dpv.cantidad) AS cantidad_total,
+              SUM(dpv.subtotal) AS facturacion_total
+            FROM detallepedidoventa dpv
+            INNER JOIN pedidoventa pv ON pv.idPedidoVenta = dpv.idPedidoVenta
+            INNER JOIN producto p     ON p.idProducto = dpv.idProducto
+            WHERE pv.fechaPedido BETWEEN :desde AND :hasta
+              AND pv.estado <> 60
+            GROUP BY p.idProducto, p.nombre, p.unidad_medida
+            ORDER BY cantidad_total DESC
+            LIMIT $limit";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':desde' => $desde,
+            ':hasta' => $hasta
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+
+    /**
+     * Atajo específico para "en preparación" (estado 80).
+     *
+     * @return array
+     */
+    public function obtenerPedidosEnPreparacionHoy(): array
+    {
+        // 80 = En Preparación según tabla estadospedidos
+        return $this->obtenerPedidosHoyPorEstado(80);
+    }
 }

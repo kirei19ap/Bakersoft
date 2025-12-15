@@ -1,5 +1,6 @@
 <?php
-require_once("head/head.php");
+$currentPage = 'pedidos';
+include_once("../../includes/head_app.php");
 require_once("../controlador/controladorPedidos.php");
 
 $ctrl = new controladorPedidos();
@@ -26,6 +27,10 @@ $productos = $ctrl->obtenerProductosVenta();
                 <form id="formPedido" action="../controlador/controladorPedidos.php" method="POST">
                     <input type="hidden" name="accion" value="crearPedido">
 
+                    <!-- NUEVO: controles internos para el modo de cliente -->
+                    <input type="hidden" id="modoCliente" name="modoCliente" value="nuevo">
+                    <input type="hidden" id="idCliente" name="idCliente" value="">
+
                     <!-- DATOS DEL CLIENTE -->
                     <div class="card mb-3">
                         <div class="card-header">
@@ -36,8 +41,11 @@ $productos = $ctrl->obtenerProductosVenta();
                             <!-- BUSCADOR DE CLIENTE -->
                             <div class="row mb-3 align-items-end">
                                 <div class="col-md-6">
-                                    <label for="busquedaCliente" class="form-label">Buscar cliente (nombre, email o teléfono)</label>
-                                    <input type="text" class="form-control" id="busquedaCliente" placeholder="Ej: Juan, 351..., @mail.com">
+                                    <label for="busquedaCliente" class="form-label">
+                                        Buscar cliente (nombre, email o teléfono)
+                                    </label>
+                                    <input type="text" class="form-control" id="busquedaCliente"
+                                           placeholder="Ej: Juan, 351..., @mail.com">
                                 </div>
                                 <div class="col-md-3 d-flex gap-2">
                                     <button type="button" class="btn btn-outline-primary mt-auto" id="btnBuscarCliente">
@@ -45,12 +53,7 @@ $productos = $ctrl->obtenerProductosVenta();
                                         Buscar cliente
                                     </button>
                                 </div>
-                                <div class="col-md-3 text-md-end mt-2 mt-md-0">
-                                    <button type="button" class="btn btn-outline-secondary mt-auto" id="btnNuevoCliente">
-                                        <ion-icon name="person-add-outline"></ion-icon>
-                                        Registrar nuevo cliente
-                                    </button>
-                                </div>
+                                <!-- La columna de "Registrar nuevo cliente" se movió más abajo, junto a Altura -->
                             </div>
 
                             <!-- RESULTADOS DE BÚSQUEDA -->
@@ -81,37 +84,47 @@ $productos = $ctrl->obtenerProductosVenta();
                                 </span>
                             </div>
 
-                            <!-- FORMULARIO DE DATOS DEL CLIENTE (se rellena para cliente nuevo o al seleccionar uno existente) -->
+                            <!-- FORMULARIO DE DATOS DEL CLIENTE -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="clienteNombre" class="form-label">Nombre / Razón social *</label>
-                                    <input type="text" class="form-control" id="clienteNombre" name="clienteNombre" required>
+                                    <input type="text" class="form-control" id="clienteNombre"
+                                           name="clienteNombre" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label for="clienteTelefono" class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" id="clienteTelefono" name="clienteTelefono">
+                                    <input type="text" class="form-control" id="clienteTelefono"
+                                           name="clienteTelefono">
                                 </div>
                                 <div class="col-md-3">
                                     <label for="clienteEmail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="clienteEmail" name="clienteEmail">
+                                    <input type="email" class="form-control" id="clienteEmail"
+                                           name="clienteEmail">
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="row mb-3 align-items-end">
                                 <div class="col-md-6">
                                     <label for="clienteCalle" class="form-label">Calle</label>
-                                    <input type="text" class="form-control" id="clienteCalle" name="clienteCalle">
+                                    <input type="text" class="form-control" id="clienteCalle"
+                                           name="clienteCalle">
                                 </div>
                                 <div class="col-md-2">
                                     <label for="clienteAltura" class="form-label">Altura</label>
-                                    <input type="number" class="form-control" id="clienteAltura" name="clienteAltura" min="0">
+                                    <input type="number" class="form-control" id="clienteAltura"
+                                           name="clienteAltura" min="0">
                                 </div>
-                                <!-- Provincia/Localidad se resolverán más adelante -->
+                                <!-- NUEVO: botón Registrar nuevo cliente a la derecha de Altura -->
+                                <div class="col-md-4 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0">
+                                    <button type="button" class="btn btn-outline-secondary mt-auto" id="btnNuevoCliente">
+                                        <ion-icon name="person-add-outline"></ion-icon>
+                                        Registrar nuevo cliente
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
                     </div>
-
 
                     <!-- DATOS DEL PEDIDO -->
                     <div class="card mb-3">
@@ -123,7 +136,7 @@ $productos = $ctrl->obtenerProductosVenta();
                                 <div class="col-md-3">
                                     <label for="fechaPedido" class="form-label">Fecha del pedido</label>
                                     <input type="date" class="form-control" id="fechaPedido" name="fechaPedido"
-                                        value="<?php echo date('Y-m-d'); ?>">
+                                           value="<?php echo date('Y-m-d'); ?>">
                                 </div>
                                 <div class="col-md-9">
                                     <label for="observaciones" class="form-label">Observaciones</label>
@@ -164,16 +177,20 @@ $productos = $ctrl->obtenerProductosVenta();
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="number" name="cantidad[]" class="form-control campo-cantidad" min="0.01" step="0.01">
+                                                <input type="number" name="cantidad[]" class="form-control campo-cantidad"
+                                                       min="0.01" step="0.01">
                                             </td>
                                             <td>
-                                                <input type="number" name="precioUnitario[]" class="form-control campo-precio" min="0" step="0.01">
+                                                <input type="number" name="precioUnitario[]" class="form-control campo-precio"
+                                                       min="0" step="0.01">
                                             </td>
                                             <td>
-                                                <input type="number" name="subtotal[]" class="form-control campo-subtotal" readonly step="0.01">
+                                                <input type="number" name="subtotal[]" class="form-control campo-subtotal"
+                                                       readonly step="0.01">
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-outline-danger btnEliminarFila" title="Eliminar línea">
+                                                <button type="button" class="btn btn-sm btn-outline-danger btnEliminarFila"
+                                                        title="Eliminar línea">
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </button>
                                             </td>
@@ -182,7 +199,7 @@ $productos = $ctrl->obtenerProductosVenta();
                                 </table>
                             </div>
 
-                            <!-- NUEVA UBICACIÓN: botón Agregar producto debajo de la tabla -->
+                            <!-- Botón Agregar producto debajo de la tabla -->
                             <div class="d-flex justify-content-start mt-2 mb-2">
                                 <button type="button" class="btn btn-sm btn-success" id="btnAgregarLinea">
                                     <ion-icon name="add-outline"></ion-icon>
@@ -193,12 +210,12 @@ $productos = $ctrl->obtenerProductosVenta();
                             <div class="d-flex justify-content-end mt-2">
                                 <div class="input-group" style="max-width: 250px;">
                                     <span class="input-group-text">Total</span>
-                                    <input type="text" class="form-control text-end" id="totalPedido" name="totalPedido" readonly value="0.00">
+                                    <input type="text" class="form-control text-end" id="totalPedido"
+                                           name="totalPedido" readonly value="0.00">
                                 </div>
                             </div>
                         </div>
                     </div>
-
 
                     <!-- BOTONES -->
                     <div class="d-flex justify-content-end gap-2">

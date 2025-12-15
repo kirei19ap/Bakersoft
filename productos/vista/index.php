@@ -383,6 +383,9 @@ $ctrl = new ControladorProducto();
 <div class="contenido-principal">
 
   <div class="encabezado-tabla">
+    <div class="mb-3 buscador">
+            <h3 class="mb-0 text-muted">Listado de productos para la venta.</h3>
+        </div>
     <div>
       <!-- <ion-icon name="add-outline"></ion-icon>
             <a href="nuevo_empleado.php">Registrar Materia Prima</a> -->

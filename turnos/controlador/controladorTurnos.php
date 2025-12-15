@@ -404,7 +404,6 @@ class controladorTurnos
             ];
         }
 
-        // Verificamos que la asignación exista y pertenezca al empleado
         // Verificamos que la asignación exista y pertenezca al empleado logueado
         $asignacion = $this->modelo->obtenerAsignacionDeEmpleado((int)$idAsignacion, (int)$idEmpleado);
 
@@ -535,6 +534,138 @@ class controladorTurnos
             'ok'         => true,
             'pendientes' => $cantidad,
             'mensaje'    => ''
+        ];
+    }
+
+    public function obtenerOperariosActivos()
+    {
+        return $this->modelo->obtenerOperariosActivos();
+    }
+
+    public function obtenerReporteTurnos($idEmpleado, $fechaDesde, $fechaHasta, $estado = '')
+    {
+        // Validaciones básicas de fecha
+        if (!$this->esFechaValida($fechaDesde)) {
+            $fechaDesde = date('Y-m-01');
+        }
+        if (!$this->esFechaValida($fechaHasta)) {
+            $fechaHasta = date('Y-m-t');
+        }
+        if ($fechaHasta < $fechaDesde) {
+            $tmp        = $fechaDesde;
+            $fechaDesde = $fechaHasta;
+            $fechaHasta = $tmp;
+        }
+
+        return $this->modelo->obtenerListadoTurnosDetalle(
+            $idEmpleado ? (int)$idEmpleado : null,
+            $fechaDesde,
+            $fechaHasta,
+            $estado
+        );
+    }
+
+    public function obtenerDashboardTurnos($fechaDesde, $fechaHasta)
+    {
+        // Validar fechas
+        if (!$this->esFechaValida($fechaDesde)) {
+            $fechaDesde = date('Y-m-01');
+        }
+        if (!$this->esFechaValida($fechaHasta)) {
+            $fechaHasta = date('Y-m-t');
+        }
+        if ($fechaHasta < $fechaDesde) {
+            $tmp        = $fechaDesde;
+            $fechaDesde = $fechaHasta;
+            $fechaHasta = $tmp;
+        }
+
+        // Distribución de estados
+        $resumenEstados = $this->modelo->obtenerResumenEstadosTurnos($fechaDesde, $fechaHasta);
+
+        $totalesPorEstado = [
+            'Asignado'   => 0,
+            'Confirmado' => 0,
+            'Finalizado' => 0,
+            'Cancelado'  => 0,
+            'Otros'      => 0,
+        ];
+        $totalTurnos = 0;
+
+        foreach ($resumenEstados as $row) {
+            $estado = $row['estado'] ?? '';
+            $cant   = (int)($row['cantidad'] ?? 0);
+
+            if (isset($totalesPorEstado[$estado])) {
+                $totalesPorEstado[$estado] += $cant;
+            } else {
+                $totalesPorEstado['Otros'] += $cant;
+            }
+            $totalTurnos += $cant;
+        }
+
+        // Cálculo de KPIs
+        $finalizados = $totalesPorEstado['Finalizado'] ?? 0;
+        $asignados   = $totalesPorEstado['Asignado']   ?? 0;
+        $confirmados = $totalesPorEstado['Confirmado'] ?? 0;
+        $cancelados  = $totalesPorEstado['Cancelado']  ?? 0;
+
+        $denCumplimiento = $asignados + $confirmados + $finalizados;
+        $porcCumplimiento = $denCumplimiento > 0
+            ? round(($finalizados / $denCumplimiento) * 100, 1)
+            : 0.0;
+
+        $denAusentismo = $denCumplimiento + $cancelados;
+        $porcAusentismo = $denAusentismo > 0
+            ? round(($cancelados / $denAusentismo) * 100, 1)
+            : 0.0;
+
+        $turnosReasignar = $cancelados;
+
+        // Tendencia semanal
+        $tendencia = $this->modelo->obtenerTendenciaSemanalTurnos($fechaDesde, $fechaHasta);
+        $labelsSemanas = [];
+        $datosCumplimientoSemanal = [];
+
+        foreach ($tendencia as $row) {
+            $totalSem  = (int)($row['totalTurnos'] ?? 0);
+            $finSem    = (int)($row['turnosFinalizados'] ?? 0);
+            $fechaIni  = $row['fechaInicioSemana'] ?? '';
+
+            // Etiqueta tipo "Sem del 01-06-2025"
+            $label = $fechaIni
+                ? 'Sem del ' . date('d-m-Y', strtotime($fechaIni))
+                : 'Semana';
+
+            $labelsSemanas[] = $label;
+
+            $porcSem = $totalSem > 0
+                ? round(($finSem / $totalSem) * 100, 1)
+                : 0.0;
+
+            $datosCumplimientoSemanal[] = $porcSem;
+        }
+
+        // Solicitudes pendientes
+        $solPendientes = $this->modelo->contarSolicitudesPendientes();
+
+        return [
+            'fechas' => [
+                'desde' => $fechaDesde,
+                'hasta' => $fechaHasta,
+            ],
+            'totalesPorEstado' => $totalesPorEstado,
+            'totalTurnos'      => $totalTurnos,
+            'kpis' => [
+                'cumplimiento'        => $porcCumplimiento,
+                'ausentismo'          => $porcAusentismo,
+                'turnosReasignar'     => $turnosReasignar,
+                'solicitudesPendientes' => $solPendientes,
+            ],
+            'tendenciaSemanal' => [
+                'labels' => $labelsSemanas,
+                'datos'  => $datosCumplimientoSemanal,
+            ],
         ];
     }
 }

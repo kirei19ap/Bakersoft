@@ -1,4 +1,5 @@
 <?php
+$currentPage = 'adminUsuarios';
 include_once("../../includes/head_app.php");
 require_once("../controlador/controladorusuarios.php");
 require_once(__DIR__ . "/../../config/bd.php");
@@ -25,6 +26,9 @@ function e($v)
 <div class="contenido-principal">
 
     <div class="encabezado-tabla">
+        <div class="">
+            <h3 class="mb-0 text-muted">Listado de usuarios del sistema.</h3>
+        </div>
         <div>
             <!-- <ion-icon name="add-outline"></ion-icon>
             <a href="nuevo_empleado.php">Registrar Materia Prima</a> -->
@@ -303,61 +307,65 @@ function e($v)
     </div>
 
     <div class="contenido">
-        <div class="tabla-empleados">
-            <table id="Usuarios-lista" class="shadow-sm table table-striped table-hover table-bordered">
-                <thead class="thead-dark">
-                    <tr class="text-center">
-                        <th style="display:none" scope="col">ID</th>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Nombre y Apellido</th>
-                        <th scope="col">Rol</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Fecha de Creación</th>
-                        <th style="display:none">rol_id</th>
-                        <th class="text-center" scope="col">Acciones</th>
+        <div class="card">
+            <div class="card-body">
+                <div class="tabla-empleados">
+                    <table id="Usuarios-lista" class="shadow-sm table table-striped table-hover table-bordered">
+                        <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th style="display:none" scope="col">ID</th>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Nombre y Apellido</th>
+                                <th scope="col">Rol</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Fecha de Creación</th>
+                                <th style="display:none">rol_id</th>
+                                <th class="text-center" scope="col">Acciones</th>
 
-                    </tr>
-                </thead>
-                <tbody id="empleados-lista">
-                    <!-- Aquí se llena la tabla con los proveedores -->
-
-                    <?php if ($usuarios): ?>
-                        <?php foreach ($usuarios as $u) { ?>
-                            <tr>
-                                <td style="display:none"><?= (int)$u['id'] ?></td>
-                                <td><?= e($u['usuario']) ?></td>
-                                <td><?= e($u['nomyapellido']) ?></td>
-                                <td><?= e($rolesMap[(int)($u['rol'] ?? 0)] ?? '—') ?></td>
-                                <td class="text-center">
-                                    <?php if (($u['estado'] ?? 'Activo') === 'Activo'): ?>
-                                        <span class="badge bg-success">Activo</span>
-                                    <?php else: ?>
-                                        <span class="badge bg-secondary">Inactivo</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?= e($u['fecha_creacion']) ?></td>
-                                <td style="display:none"><?= (int)($u['rol'] ?? 0) ?></td>
-
-                                <td class="text-center">
-                                    <button class="btn btn-success verUsuario" title="Consultar Usuario">
-                                        <ion-icon name="eye-outline"></ion-icon>
-                                    </button>
-                                    <button class="btn btn-primary editUsuario" title="Editar Usuario">
-                                        <ion-icon name="create-outline"></ion-icon>
-                                    </button>
-                                    <button class="btn btn-danger deleteUsuario" title="Eliminar Usuario">
-                                        <ion-icon name="trash-outline"></ion-icon>
-                                    </button>
-                                </td>
-                            <?php }  ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center">No existen usuarios para mostrar</td>
                             </tr>
-                        <?php endif; ?>
+                        </thead>
+                        <tbody id="empleados-lista">
+                            <!-- Aquí se llena la tabla con los proveedores -->
 
-                </tbody>
-            </table>
+                            <?php if ($usuarios): ?>
+                                <?php foreach ($usuarios as $u) { ?>
+                                    <tr>
+                                        <td style="display:none"><?= (int)$u['id'] ?></td>
+                                        <td><?= e($u['usuario']) ?></td>
+                                        <td><?= e($u['nomyapellido']) ?></td>
+                                        <td><?= e($rolesMap[(int)($u['rol'] ?? 0)] ?? '—') ?></td>
+                                        <td class="text-center">
+                                            <?php if (($u['estado'] ?? 'Activo') === 'Activo'): ?>
+                                                <span class="badge bg-success">Activo</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Inactivo</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= e($u['fecha_creacion']) ?></td>
+                                        <td style="display:none"><?= (int)($u['rol'] ?? 0) ?></td>
+
+                                        <td class="text-center">
+                                            <button class="btn btn-success verUsuario" title="Consultar Usuario">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-primary editUsuario" title="Editar Usuario">
+                                                <ion-icon name="create-outline"></ion-icon>
+                                            </button>
+                                            <button class="btn btn-danger deleteUsuario" title="Eliminar Usuario">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
+                                        </td>
+                                    <?php }  ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center">No existen usuarios para mostrar</td>
+                                    </tr>
+                                <?php endif; ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>

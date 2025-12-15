@@ -10,7 +10,7 @@ $fechaHasta = $_GET['hasta'] ?? $hoy;
 ?>
 
 <div class="titulo-contenido shadow-sm">
-  <h1 class="display-5">Reportes gráficos de pedidos</h1>
+  <h1 class="display-5">Estadísticas de pedidos</h1>
 </div>
 
 <div class="contenido-principal">
@@ -18,13 +18,9 @@ $fechaHasta = $_GET['hasta'] ?? $hoy;
     <p class="mb-0 text-muted">
       Visualización de pedidos por estado, por día y facturación en un rango de fechas.
     </p>
-    <a href="index.php" class="btn btn-outline-secondary btn-sm">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-      Volver a pedidos
-    </a>
   </div>
 
-    <div class="contenido">
+  <div class="contenido">
 
     <!-- FILTROS -->
     <div class="card mb-3">
@@ -33,12 +29,12 @@ $fechaHasta = $_GET['hasta'] ?? $hoy;
           <div class="col-md-3">
             <label for="fechaDesde" class="form-label">Desde</label>
             <input type="date" id="fechaDesde" class="form-control"
-                   value="<?php echo htmlspecialchars($fechaDesde); ?>">
+              value="<?php echo htmlspecialchars($fechaDesde); ?>">
           </div>
           <div class="col-md-3">
             <label for="fechaHasta" class="form-label">Hasta</label>
             <input type="date" id="fechaHasta" class="form-control"
-                   value="<?php echo htmlspecialchars($fechaHasta); ?>">
+              value="<?php echo htmlspecialchars($fechaHasta); ?>">
           </div>
           <div class="col-md-3">
             <button type="button" class="btn btn-primary mt-4" id="btnAplicarFiltrosPedidos">
@@ -88,6 +84,50 @@ $fechaHasta = $_GET['hasta'] ?? $hoy;
         </div>
       </div>
     </div>
+
+    <!-- FILA 3: PRODUCTOS MÁS VENDIDOS -->
+    <div class="row g-3 mt-1">
+      <div class="col-lg-7">
+        <div class="card h-100">
+          <div class="card-header">
+            Productos más vendidos (Top 10)
+          </div>
+          <div class="card-body" style="height: 320px;">
+            <canvas id="chartProductosMasVendidos"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card h-100">
+          <div class="card-header">
+            Detalle (Top 10)
+          </div>
+          <div class="card-body" style="height: 320px; overflow:auto;">
+            <div class="table-responsive">
+              <table class="table table-sm table-striped align-middle mb-0" id="tablaTopProductos">
+                <thead class="table-light">
+                  <tr>
+                    <th>Producto</th>
+                    <th class="text-end">Cantidad</th>
+                    <th class="text-end">Facturación</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="3" class="text-muted text-center">Aplicá filtros para ver resultados.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <small class="text-muted d-block mt-2">
+              Nota: no se incluyen pedidos Cancelados.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 

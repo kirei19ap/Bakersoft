@@ -11,6 +11,16 @@ $puestos    = $obj->traerPuesto();
     <h1 class="display-5">Buscador de empleados</h1>
 </div>
 <div class="contenido-principal">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h3 class="mb-0 text-muted">Buscador parametrizado de la nomina de empleados.</h3>
+            <small class="text-muted">
+                Seleccione de los parametros disponibles o complete el campo "Búsqueda" para utilizarlo. Debe completar al menos un campo para realizar la búsqueda.
+            </small>
+        </div>
+        <div>
+        </div>
+    </div>
 
     <!-- Filtros -->
     <div class="card mb-3">
@@ -63,7 +73,7 @@ $puestos    = $obj->traerPuesto();
                     <button id="btnLimpiar" type="button" class="btn btn-outline-secondary">
                         Limpiar
                     </button>
-                    
+
                 </div>
             </form>
         </div>

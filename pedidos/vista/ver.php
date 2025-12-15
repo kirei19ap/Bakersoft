@@ -1,4 +1,5 @@
 <?php
+$currentPage = 'pedidos';
 include_once("../../includes/head_app.php");
 require_once("../controlador/controladorPedidos.php");
 
@@ -80,10 +81,6 @@ if ($fechaRaw) {
     <p class="mb-0 text-muted">
       Detalle del pedido, datos del cliente y productos asociados. No es posible modificar desde esta vista.
     </p>
-    <a href="index.php" class="btn btn-outline-secondary btn-sm">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-      Volver al listado
-    </a>
   </div>
 
   <div class="contenido">
@@ -203,7 +200,7 @@ if ($fechaRaw) {
 
         <!-- SIN BOTONES DE GUARDADO / ACCIONES -->
         <div class="d-flex justify-content-end mt-3">
-          <a href="index.php" class="btn btn-outline-secondary">
+          <a href="index.php" class="btn btn-secondary">
             <ion-icon name="arrow-back-outline"></ion-icon>
             Volver al listado
           </a>

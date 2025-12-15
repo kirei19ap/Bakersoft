@@ -18,6 +18,7 @@ $proveedores = $obj->proveedoresTodos();
 
     <div class="encabezado-tabla">
         <div class="mb-3">
+            <h3 class="mb-0 text-muted">Listado de materia prima.</h3>
             <div id="contenedorCategoria" class="text-start">
                 <label for="filtroCategoria" class="form-label mb-1">Filtrar por categoría:</label>
                 <select id="filtroCategoria" class="form-select form-select-sm">

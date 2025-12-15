@@ -35,6 +35,10 @@ if (isset($_SESSION['user'])) {
             header("Location: inicio.php");
             exit();
         }
+        else if ($datosUsuario[0]['nombre_rol'] == "Admin Reparto") {
+            header("Location: inicio.php");
+            exit();
+        }
         #echo $_SESSION['usuario'];
         #echo $_SESSION['nomyapellido'];
         #echo $_SESSION['rol'];

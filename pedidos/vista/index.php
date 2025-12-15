@@ -2,19 +2,23 @@
 $currentPage = 'pedidos';
 include_once("../../includes/head_app.php");
 require_once("../controlador/controladorPedidos.php");
+require_once("../../reparto/controlador/controladorReparto.php");
 
 $ctrl = new controladorPedidos();
+$ctrlReparto = new ControladorReparto();
 $pedidos = $ctrl->listarPedidos(); // NUEVO
 
 $mensaje = $_GET['msg'] ?? '';
 $tipoAlerta = $_GET['tipo'] ?? '';
 ?>
 <style>
-table.dataTable td.dt-empty {
+  table.dataTable td.dt-empty {
     text-align: center !important;
-    color: #6c757d;          /* gris bonito */
-    font-style: italic;      /* opcional */
-}
+    color: #6c757d;
+    /* gris bonito */
+    font-style: italic;
+    /* opcional */
+  }
 </style>
 <div class="titulo-contenido shadow-sm">
   <h1 class="display-5">Pedidos</h1>
@@ -42,7 +46,7 @@ table.dataTable td.dt-empty {
   </div>
 
   <div class="contenido">
-    <div class="card">
+    <div class="tabla-empleados card">
       <div class="card-body">
         <div class="">
           <table id="tablaPedidos" class="table table-striped table-bordered align-middle">
@@ -64,6 +68,7 @@ table.dataTable td.dt-empty {
                   $estado = (int)$p['estado'];
                   $descEstado = $p['descEstado'] ?? 'N/D';
                   $idPedido = (int)$p['idPedidoVenta'];
+                  $enRepartoActivo = $ctrlReparto->pedidoEnRepartoActivo($idPedido);
 
                   // Resumen de stock para este pedido
                   $resumenStock   = $ctrl->obtenerResumenStockPedido($idPedido);
@@ -115,14 +120,33 @@ table.dataTable td.dt-empty {
 
                   if ($estado === 70) { // Generado
                     $puedePreparar = $stockSuficiente ? true : false;
-                    $acciones[] = ['dataAction' => 'Confirmar', 'nuevoEstado' => 80, 'class' => 'btn-primary', 'label' => 'Confirmar'];
+                    $acciones[] = ['dataAction' => 'Confirmar', 'nuevoEstado' => 80, 'class' => 'btn-info', 'label' => 'Confirmar'];
                     $acciones[] = ['dataAction' => 'Cancelar',  'nuevoEstado' => 60, 'class' => 'btn-danger',  'label' => 'Cancelar'];
                   } elseif ($estado === 80) { // Confirmado
-                    $acciones[] = ['dataAction' => 'Preparar', 'nuevoEstado' => 90, 'class' => 'btn-primary', 'label' => 'Preparar'];
+                    $acciones[] = ['dataAction' => 'Preparar', 'nuevoEstado' => 90, 'class' => 'btn-info', 'label' => 'Preparado'];
                     $acciones[] = ['dataAction' => 'Cancelar',  'nuevoEstado' => 60, 'class' => 'btn-danger',  'label' => 'Cancelar'];
                   } elseif ($estado === 90) { // Preparado
-                    $acciones[] = ['dataAction' => 'Entregar', 'nuevoEstado' => 100, 'class' => 'btn-success', 'label' => 'Entregar'];
-                    $acciones[] = ['dataAction' => 'Cancelar',  'nuevoEstado' => 60,  'class' => 'btn-danger',  'label' => 'Cancelar'];
+                    if ($enRepartoActivo) {
+                      // El pedido está siendo gestionado por un reparto activo:
+                      // - NO permitir Entregar desde pedidos
+                      // - NO permitir Cancelar desde pedidos
+                      $acciones = []; // que la gestión venga 100% desde el módulo de repartos
+                    } else {
+                      // Pedido preparado que NO está en reparto:
+                      // se puede entregar directo o cancelar.
+                      $acciones[] = [
+                        'dataAction'  => 'Entregar',
+                        'nuevoEstado' => 100,
+                        'class'       => 'btn-light',
+                        'label'       => 'Entregar'
+                      ];
+                      $acciones[] = [
+                        'dataAction'  => 'Cancelar',
+                        'nuevoEstado' => 60,
+                        'class'       => 'btn-danger',
+                        'label'       => 'Cancelar'
+                      ];
+                    }
                   } else {
                     $acciones = [];
                   }
@@ -170,12 +194,12 @@ table.dataTable td.dt-empty {
                     <td class="text-end">
                       $ <?php echo number_format($p['total'], 2, ',', '.'); ?>
                     </td>
-                    <td>
+                    <td class="text-center">
                       <div class="d-flex flex-wrap gap-1">
 
                         <!-- BOTÓN VER (solo lectura) -->
                         <a href="ver.php?id=<?php echo (int)$p['idPedidoVenta']; ?>"
-                          class="btn btn-sm btn-info"
+                          class="btn btn-sm btn-success linkcomoBoton"
                           title="Ver pedido">
                           <ion-icon name="eye-outline" style="font-size:1.2rem; vertical-align:middle;"></ion-icon>
                         </a>
@@ -184,7 +208,7 @@ table.dataTable td.dt-empty {
                         <?php $puedeEditar = ($estado === 70); ?>
                         <?php if ($puedeEditar): ?>
                           <a href="editar.php?id=<?php echo (int)$p['idPedidoVenta']; ?>"
-                            class="btn btn-sm btn-secondary"
+                            class="btn btn-sm btn-primary"
                             title="Editar pedido">
                             <ion-icon name="create-outline" style="font-size:1.2rem; vertical-align:middle;"></ion-icon>
                           </a>
@@ -208,14 +232,14 @@ table.dataTable td.dt-empty {
                             case 'Confirmar':
                               $icono = 'checkmark-outline';
                               break;
-                            case 'Preparar':
+                            case 'Preparado':
                               $icono = 'hammer-outline';
                               break;
                             case 'Entregar':
-                              $icono = 'cube-outline';
+                              $icono = 'car-outline';
                               break;
                             case 'Cancelar':
-                              $icono = 'close-circle-outline';
+                              $icono = 'trash-outline';
                               break;
                           }
                           ?>
@@ -223,7 +247,7 @@ table.dataTable td.dt-empty {
                           <?php if ($acc['label'] === 'Confirmar' && !$puedePreparar): ?>
                             <!-- CONFIRMAR DESHABILITADO POR FALTA DE STOCK -->
                             <button type="button"
-                              class="btn btn-sm btn-primary"
+                              class="btn btn-sm btn-info"
                               disabled
                               title="No hay materias primas suficientes para preparar este pedido">
                               <ion-icon name="<?php echo $icono; ?>"

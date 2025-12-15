@@ -38,6 +38,9 @@ function badgeEstado($estadoDesc) {
 <div class="contenido-principal">
 
     <div class="encabezado-tabla">
+        <div class="mb-3 buscador">
+            <h3 class="mb-0 text-muted">Listado de pedidos de materia prima.</h3>
+        </div>
         <div>
             <!-- <ion-icon name="add-outline"></ion-icon>
             <a href="nuevo_empleado.php">Registrar Materia Prima</a> -->
@@ -77,7 +80,7 @@ function badgeEstado($estadoDesc) {
                                         <td><?php echo $pedmp['idPedido']; ?></td>
                                         <td><?php echo $pedmp['fechaPedido']; ?></td>
                                         <td><?php echo $pedmp['proveedor']; ?></td>
-                                        <td><?= badgeEstado($pedmp['estado']); ?></td>
+                                        <td class = "text-center"><?= badgeEstado($pedmp['estado']); ?></td>
                                         <td class="text-center">
                                             <a class="btn btn-success" title="Consultar Pedido" href="verPedido.php?id=<?php echo $pedmp['idPedido']; ?>">
                                                 <ion-icon name="eye-outline"></ion-icon>

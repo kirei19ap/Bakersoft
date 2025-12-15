@@ -1,4 +1,5 @@
 <?php
+$currentPage = 'adminRoles';
 include_once("../../includes/head_app.php");
 require_once(__DIR__ . "/../../config/bd.php");
 $pdo = (new bd())->conexion();
@@ -13,7 +14,10 @@ $roles = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 
-function e($v){ return htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8'); }
+function e($v)
+{
+  return htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <div class="titulo-contenido shadow-sm">
@@ -23,7 +27,9 @@ function e($v){ return htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8')
 <div class="contenido-principal">
 
   <div class="encabezado-tabla d-flex justify-content-between align-items-center mb-2">
-    <div></div>
+    <div>
+      <h3 class="mb-0 text-muted">Listado de roles del sistema.</h3>
+    </div>
     <div>
       <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registrarRol">
         Registrar Rol
@@ -32,45 +38,64 @@ function e($v){ return htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8')
   </div>
 
   <!-- Flash (SweetAlert) -->
-  <?php if (!empty($_SESSION['roles_msg'])): $msg = $_SESSION['roles_msg']; unset($_SESSION['roles_msg']); ?>
+  <?php if (!empty($_SESSION['roles_msg'])): $msg = $_SESSION['roles_msg'];
+    unset($_SESSION['roles_msg']); ?>
     <script>
-      Swal.fire({ icon: 'success', title: 'OK', text: '<?= e($msg) ?>', confirmButtonText: 'Aceptar' });
+      Swal.fire({
+        icon: 'success',
+        title: 'OK',
+        text: '<?= e($msg) ?>',
+        confirmButtonText: 'Aceptar'
+      });
     </script>
   <?php endif; ?>
-  <?php if (!empty($_SESSION['roles_err'])): $msg = $_SESSION['roles_err']; unset($_SESSION['roles_err']); ?>
+  <?php if (!empty($_SESSION['roles_err'])): $msg = $_SESSION['roles_err'];
+    unset($_SESSION['roles_err']); ?>
     <script>
-      Swal.fire({ icon: 'error', title: 'Atención', text: '<?= e($msg) ?>', confirmButtonText: 'Aceptar' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Atención',
+        text: '<?= e($msg) ?>',
+        confirmButtonText: 'Aceptar'
+      });
     </script>
   <?php endif; ?>
 
   <div class="contenido">
-    <div class="tabla-empleados">
-      <table id="Roles-lista" class="shadow-sm table table-striped table-hover table-bordered align-middle">
-        <thead class="thead-dark">
-          <tr class="text-center">
-            <th style="display:none">ID</th>
-            <th>Nombre del Rol</th>
-            <th class="text-center">Usuarios</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if ($roles): foreach ($roles as $r): ?>
-            <tr>
-              <td style="display:none"><?= (int)$r['id_rol'] ?></td>
-              <td><?= e($r['nombre_rol']) ?></td>
-              <td class="text-center"><?= (int)$r['cant_usuarios'] ?></td>
-              <td class="text-center">
-                <button class="btn btn-success verRol" title="Ver"><ion-icon name="eye-outline"></ion-icon></button>
-                <button class="btn btn-primary editRol" title="Editar"><ion-icon name="create-outline"></ion-icon></button>
-                <button class="btn btn-danger deleteRol" title="Eliminar"><ion-icon name="trash-outline"></ion-icon></button>
-              </td>
-            </tr>
-          <?php endforeach; else: ?>
-            <tr><td colspan="4" class="text-center">No existen roles para mostrar</td></tr>
-          <?php endif; ?>
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="card-body">
+        <div class="tabla-empleados">
+          <table id="Roles-lista" class="shadow-sm table table-striped table-hover table-bordered align-middle">
+            <thead class="thead-dark">
+              <tr class="text-center">
+                <th style="display:none">ID</th>
+                <th>Nombre del Rol</th>
+                <th class="text-center">Usuarios</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if ($roles): foreach ($roles as $r): ?>
+                  <tr>
+                    <td style="display:none"><?= (int)$r['id_rol'] ?></td>
+                    <td><?= e($r['nombre_rol']) ?></td>
+                    <td class="text-center"><?= (int)$r['cant_usuarios'] ?></td>
+                    <td class="text-center">
+                      <button class="btn btn-success verRol" title="Ver"><ion-icon name="eye-outline"></ion-icon></button>
+                      <button class="btn btn-primary editRol" title="Editar"><ion-icon name="create-outline"></ion-icon></button>
+                      <button class="btn btn-danger deleteRol" title="Eliminar"><ion-icon name="trash-outline"></ion-icon></button>
+                    </td>
+                  </tr>
+                <?php endforeach;
+              else: ?>
+                <tr>
+                  <td colspan="4" class="text-center">No existen roles para mostrar</td>
+                </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>

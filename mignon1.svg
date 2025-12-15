@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <!-- Fondo circular -->
+  <circle cx="36" cy="36" r="34" fill="#FBE9E0"></circle>
+  <circle cx="36" cy="36" r="29" fill="#F5D1A1"></circle>
+
+  <!-- Sombra debajo -->
+  <ellipse cx="36" cy="50" rx="16" ry="5" fill="#E0B27A" opacity="0.45"></ellipse>
+
+  <!-- CUERPO DEL PAN MIGNÓN (vertical) -->
+  <path d="M28 18
+       C26 21, 25 26, 25 34
+       C25 42, 26 47, 28 50
+       C31 53, 41 53, 44 50
+       C46 47, 47 42, 47 34
+       C47 26, 46 21, 44 18
+       C41 15, 31 15, 28 18Z" fill="#F2B36A" stroke="#C47C3A" stroke-width="2" stroke-linejoin="round"></path>
+
+  <!-- BRILLO lateral -->
+  <path d="M30 20
+       C28.5 24, 28 28, 28 34
+       C28 40, 28.5 44, 30 48" fill="none" stroke="#FFDDB2" stroke-width="1.6" stroke-linecap="round" opacity="0.85"></path>
+
+  <!-- CORTES DIAGONALES (arriba) -->
+  <path d="M30 23
+       C33 22, 37 22, 40 23" fill="none" stroke="#F9E3C5" stroke-width="2" stroke-linecap="round"></path>
+  <path d="M31 26
+       C34 25.5, 36.5 25.5, 39 26" fill="none" stroke="#F9E3C5" stroke-width="2" stroke-linecap="round" opacity="0.95"></path>
+
+  <!-- OJOS OVALADOS CARICATURESCOS (más altos y separados) -->
+  <!-- Ojo izquierdo -->
+  <ellipse cx="32" cy="31" rx="3" ry="4" fill="#FFFFFF"></ellipse>
+  <ellipse cx="32.3" cy="31.6" rx="1.4" ry="2" fill="#4E342E"></ellipse>
+  <circle cx="31.6" cy="30.7" r="0.7" fill="#FFFFFF" opacity="0.9"></circle>
+
+  <!-- Ojo derecho -->
+  <ellipse cx="40" cy="31" rx="3" ry="4" fill="#FFFFFF"></ellipse>
+  <ellipse cx="40.3" cy="31.6" rx="1.4" ry="2" fill="#4E342E"></ellipse>
+  <circle cx="39.6" cy="30.7" r="0.7" fill="#FFFFFF" opacity="0.9"></circle>
+
+  <!-- MEJILLAS -->
+  <circle cx="29" cy="36" r="1.7" fill="#F9C6A5" opacity="0.85"></circle>
+  <circle cx="43" cy="36" r="1.7" fill="#F9C6A5" opacity="0.85"></circle>
+
+  <!-- SONRISA (más abajo para dar aire) -->
+  <path d="M31.5 41
+       C34 43.5, 38 43.5, 40.5 41" fill="none" stroke="#4E342E" stroke-width="1.7" stroke-linecap="round"></path>
+</svg>

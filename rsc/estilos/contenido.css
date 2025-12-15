@@ -38,6 +38,12 @@
     height: 35px;
     padding: 5px;
 }
+.linkcomoBoton{
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+}
+
 .contenido-principal .contenido .tabla-empleados button ion-icon{
     font-size: 20px;    
 }
@@ -122,4 +128,55 @@
     .form-busqueda {
         padding: 10px 12px;
     }
+}
+
+/* === Tarjetas KPI genéricas === */
+.kpi-card {
+    border-left-width: 4px !important;
+    border-left-style: solid !important;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.kpi-card-icon {
+    font-size: 22px;
+}
+
+/* Variantes de color (siguiendo el patrón reparto) */
+.kpi-blue {
+    border-left-color: #3b82f6 !important;
+    background: rgba(59, 130, 246, 0.08) !important;
+}
+.kpi-blue .kpi-card-icon {
+    color: #3b82f6;
+}
+
+.kpi-green {
+    border-left-color: #22c55e !important;
+    background: rgba(34, 197, 94, 0.08) !important;
+}
+.kpi-green .kpi-card-icon {
+    color: #22c55e;
+}
+
+.kpi-teal {
+    border-left-color: #14b8a6 !important;
+    background: rgba(20, 184, 166, 0.08) !important;
+}
+.kpi-teal .kpi-card-icon {
+    color: #14b8a6;
+}
+
+.kpi-red {
+    border-left-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+}
+.kpi-red .kpi-card-icon {
+    color: #ef4444;
+}
+.kpi-yellow {
+    border-left-color: #eab308 !important; /* amarillo */
+    background: rgba(234, 179, 8, 0.12) !important;
+}
+.kpi-yellow .kpi-card-icon {
+    color: #eab308;
 }
