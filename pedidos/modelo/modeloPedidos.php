@@ -31,25 +31,29 @@ class modeloPedidos
     public function buscarClientes(string $termino)
     {
         $sql = "SELECT 
-                    id_cliente,
-                    nombre,
-                    email,
-                    telefono,
-                    calle,
-                    altura,
-                    provincia,
-                    localidad
-                FROM clientes
-                WHERE nombre   LIKE :term
-                   OR email    LIKE :term
-                   OR telefono LIKE :term
-                ORDER BY nombre
-                LIMIT 20";
+                id_cliente,
+                nombre,
+                email,
+                telefono,
+                calle,
+                altura,
+                provincia,
+                localidad
+            FROM clientes
+            WHERE estado = 'Activo'
+              AND (
+                   nombre   LIKE :term
+                OR email    LIKE :term
+                OR telefono LIKE :term
+              )
+            ORDER BY nombre
+            LIMIT 20";
         $stmt = $this->pdo->prepare($sql);
         $like = '%' . $termino . '%';
         $stmt->execute([':term' => $like]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     /**
      * Actualiza datos básicos de un cliente existente (sin tocar provincia/localidad/estado).

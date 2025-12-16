@@ -46,6 +46,13 @@ $menuItems = [
         'roles' => ['Admin Produccion', 'Encargado de atención cliente']
     ],
     [
+        'id'    => 'clientes',
+        'label' => 'Clientes',
+        'icon'  => 'people-circle-outline',
+        'href'  => "$base/clientes/vista/index.php",
+        'roles' => ['Encargado de atención cliente']
+    ],
+    [
         'id'    => 'materiaprima',
         'label' => 'Materia Prima',
         'icon'  => 'cube-outline',
@@ -176,7 +183,9 @@ $menuItems = [
     <link rel="stylecheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="<?php echo $base; ?>/rsc/script/mignon.js"></script>
-    <script> const BAKERSOFT_BASE = "<?php echo $base; ?>";</script>
+    <script>
+        const BAKERSOFT_BASE = "<?php echo $base; ?>";
+    </script>
 
 </head>
 
@@ -184,211 +193,220 @@ $menuItems = [
     <!-- ========================================= -->
     <!-- MIGNON: BOTÓN FLOTANTE Y PANEL DE CHAT   -->
     <!-- ========================================= -->
-<style>
-/* ============================= */
-/* MIGNON - BOTÓN Y PANEL        */
-/* ============================= */
+    <style>
+        /* ============================= */
+        /* MIGNON - BOTÓN Y PANEL        */
+        /* ============================= */
 
-/* BOTÓN FLOTANTE */
-.mignon-launcher {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 74px;              /* MÁS GRANDE */
-  height: 74px;             /* MÁS GRANDE */
-  cursor: pointer;
-  z-index: 9999;
-  border-radius: 50%;
-  background-color: #FBF4E5; /* Crema BakerSoft */
-  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  border: 2px solid #697565; /* Verde BakerSoft */
-}
+        /* BOTÓN FLOTANTE */
+        .mignon-launcher {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 74px;
+            /* MÁS GRANDE */
+            height: 74px;
+            /* MÁS GRANDE */
+            cursor: pointer;
+            z-index: 9999;
+            border-radius: 50%;
+            background-color: #FBF4E5;
+            /* Crema BakerSoft */
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            border: 2px solid #697565;
+            /* Verde BakerSoft */
+        }
 
-/* Hover sutil */
-.mignon-launcher:hover {
-  transform: scale(1.06);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.32);
-}
+        /* Hover sutil */
+        .mignon-launcher:hover {
+            transform: scale(1.06);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+        }
 
-.mignon-launcher svg {
-  width: 86%;
-  height: 86%;
-  display: block;
-}
-
-
-/* PANEL DE CHAT */
-.mignon-panel {
-  position: fixed;
-  bottom: 110px;
-  right: 24px;
-  width: 320px;
-  max-height: 480px;
-  background: #F2F2F2; /* Fondo suave */
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.25);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 10000;
-  transform: translateY(20px);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.25s ease-out;
-  border: 1px solid #DDDDDD;
-}
-
-.mignon-panel.mignon-open {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
+        .mignon-launcher svg {
+            width: 86%;
+            height: 86%;
+            display: block;
+        }
 
 
-/* HEADER DEL PANEL */
-.mignon-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  background: #697565;              /* Verde BakerSoft */
-  border-bottom: 1px solid #545F55; /* Un tono más oscuro */
-  color: #FFFFFF;
-}
+        /* PANEL DE CHAT */
+        .mignon-panel {
+            position: fixed;
+            bottom: 110px;
+            right: 24px;
+            width: 320px;
+            max-height: 480px;
+            background: #F2F2F2;
+            /* Fondo suave */
+            border-radius: 16px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10000;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease-out;
+            border: 1px solid #DDDDDD;
+        }
 
-.mignon-header-icon svg {
-  width: 34px;
-  height: 34px;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
-}
-
-.mignon-header-text {
-  flex: 1;
-  margin-left: 8px;
-}
-
-.mignon-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #FFFFFF;
-}
-
-.mignon-subtitle {
-  font-size: 0.78rem;
-  color: #E8EDE8;
-}
-
-.mignon-close {
-  border: none;
-  background: transparent;
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-  color: #FFFFFF;
-}
+        .mignon-panel.mignon-open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
 
 
-/* MENSAJES */
-.mignon-messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  background: #F7F7F7;
-}
+        /* HEADER DEL PANEL */
+        .mignon-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #697565;
+            /* Verde BakerSoft */
+            border-bottom: 1px solid #545F55;
+            /* Un tono más oscuro */
+            color: #FFFFFF;
+        }
 
-.mignon-message {
-  display: flex;
-  margin-bottom: 8px;
-}
+        .mignon-header-icon svg {
+            width: 34px;
+            height: 34px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
+        }
 
-.mignon-from-bot {
-  justify-content: flex-start;
-}
+        .mignon-header-text {
+            flex: 1;
+            margin-left: 8px;
+        }
 
-.mignon-from-user {
-  justify-content: flex-end;
-}
+        .mignon-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #FFFFFF;
+        }
 
-.mignon-bubble {
-  max-width: 80%;
-  padding: 8px 10px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: #333333;
-}
+        .mignon-subtitle {
+            font-size: 0.78rem;
+            color: #E8EDE8;
+        }
 
-/* Burbuja de Mignon con acento verde */
-.mignon-from-bot .mignon-bubble {
-  background: #E3E5E1;          /* gris verdoso suave */
-  border-left: 4px solid #697565;
-  border-bottom-left-radius: 4px;
-}
-
-/* Burbuja del usuario */
-.mignon-from-user .mignon-bubble {
-  background: #FFFFFF;
-  border: 1px solid #DDDDDD;
-  border-bottom-right-radius: 4px;
-}
-
-
-/* INPUT Y BOTÓN */
-.mignon-input-area {
-  display: flex;
-  border-top: 1px solid #DDDDDD;
-  padding: 6px;
-  background: #FFFFFF;
-}
-
-.mignon-input {
-  flex: 1;
-  border: 1px solid #CCCCCC;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  outline: none;
-  color: #333333;
-  background-color: #FAFAFA;
-}
-
-.mignon-input:focus {
-  border-color: #697565;
-  background-color: #FFFFFF;
-}
-
-/* Botón enviar */
-.mignon-send-btn {
-  margin-left: 6px;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  background: #697565;   /* Verde BakerSoft */
-  color: #FFFFFF;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.mignon-send-btn:hover {
-  background: #545F55;
-}
+        .mignon-close {
+            border: none;
+            background: transparent;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #FFFFFF;
+        }
 
 
-/* SCROLLBAR */
-.mignon-messages::-webkit-scrollbar {
-  width: 6px;
-}
-.mignon-messages::-webkit-scrollbar-thumb {
-  background: #D0C0A8;
-  border-radius: 3px;
-}
+        /* MENSAJES */
+        .mignon-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #F7F7F7;
+        }
 
-</style>
-<!-- Botón flotante -->
+        .mignon-message {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .mignon-from-bot {
+            justify-content: flex-start;
+        }
+
+        .mignon-from-user {
+            justify-content: flex-end;
+        }
+
+        .mignon-bubble {
+            max-width: 80%;
+            padding: 8px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #333333;
+        }
+
+        /* Burbuja de Mignon con acento verde */
+        .mignon-from-bot .mignon-bubble {
+            background: #E3E5E1;
+            /* gris verdoso suave */
+            border-left: 4px solid #697565;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Burbuja del usuario */
+        .mignon-from-user .mignon-bubble {
+            background: #FFFFFF;
+            border: 1px solid #DDDDDD;
+            border-bottom-right-radius: 4px;
+        }
+
+
+        /* INPUT Y BOTÓN */
+        .mignon-input-area {
+            display: flex;
+            border-top: 1px solid #DDDDDD;
+            padding: 6px;
+            background: #FFFFFF;
+        }
+
+        .mignon-input {
+            flex: 1;
+            border: 1px solid #CCCCCC;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            outline: none;
+            color: #333333;
+            background-color: #FAFAFA;
+        }
+
+        .mignon-input:focus {
+            border-color: #697565;
+            background-color: #FFFFFF;
+        }
+
+        /* Botón enviar */
+        .mignon-send-btn {
+            margin-left: 6px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            background: #697565;
+            /* Verde BakerSoft */
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .mignon-send-btn:hover {
+            background: #545F55;
+        }
+
+
+        /* SCROLLBAR */
+        .mignon-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .mignon-messages::-webkit-scrollbar-thumb {
+            background: #D0C0A8;
+            border-radius: 3px;
+        }
+    </style>
+    <!-- Botón flotante -->
     <div class="mignon-launcher" id="mignonLauncher" title="Mignon, tu amigo panadero">
         <!-- SVG de Mignon -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">

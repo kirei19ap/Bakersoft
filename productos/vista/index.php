@@ -431,7 +431,7 @@ $ctrl = new ControladorProducto();
   <div class="contenido">
     <div class="card">
       <div class="card-body">
-        <div class="">
+        <div class="tabla-empleados">
 
           <!-- ======= Productos (contenido principal) ======= -->
           <div class="container-fluid py-3">
@@ -459,7 +459,7 @@ $ctrl = new ControladorProducto();
               </div>
 
               <div class="table-responsive" id="wrapProductos">
-                <table class="table table-striped table-sm table-hover align-middle" id="tablaProductos">
+                <table class="table table-striped table-sm table-hover table-bordered align-middle" id="tablaProductos">
                   <thead class="table-light">
                     <tr>
                       <th>#</th>
@@ -467,6 +467,7 @@ $ctrl = new ControladorProducto();
                       <th>Categoría</th>
                       <th>Unidad</th>
                       <th>Estado</th>
+                      <th class="text-center">Acciones</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
