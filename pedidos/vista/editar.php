@@ -9,8 +9,8 @@ $idPedido = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $datos = $ctrl->obtenerPedidoCompleto($idPedido);
 
 if (!$datos) {
-    header("Location: index.php?msg=" . urlencode('Pedido no encontrado.') . "&tipo=error");
-    exit();
+  header("Location: index.php?msg=" . urlencode('Pedido no encontrado.') . "&tipo=error");
+  exit();
 }
 
 $pedido  = $datos['pedido'];
@@ -18,8 +18,8 @@ $detalle = $datos['detalle'];
 
 // Si el estado no es Generado, no permitimos editar
 if ((int)$pedido['estado'] !== 70) {
-    header("Location: index.php?msg=" . urlencode('Solo se pueden editar pedidos en estado Generado.') . "&tipo=error");
-    exit();
+  header("Location: index.php?msg=" . urlencode('Solo se pueden editar pedidos en estado Generado.') . "&tipo=error");
+  exit();
 }
 
 $productos = $ctrl->obtenerProductosVenta();
@@ -57,17 +57,17 @@ $productos = $ctrl->obtenerProductosVenta();
                 <div class="col-md-6">
                   <label for="clienteNombre" class="form-label">Nombre / Razón social *</label>
                   <input type="text" class="form-control" id="clienteNombre" name="clienteNombre"
-                         value="<?php echo htmlspecialchars($pedido['nombre']); ?>" required>
+                    value="<?php echo htmlspecialchars($pedido['nombre']); ?>" required>
                 </div>
                 <div class="col-md-3">
                   <label for="clienteTelefono" class="form-label">Teléfono</label>
                   <input type="text" class="form-control" id="clienteTelefono" name="clienteTelefono"
-                         value="<?php echo htmlspecialchars($pedido['telefono']); ?>">
+                    value="<?php echo htmlspecialchars($pedido['telefono']); ?>">
                 </div>
                 <div class="col-md-3">
                   <label for="clienteEmail" class="form-label">Email</label>
                   <input type="email" class="form-control" id="clienteEmail" name="clienteEmail"
-                         value="<?php echo htmlspecialchars($pedido['email']); ?>">
+                    value="<?php echo htmlspecialchars($pedido['email']); ?>">
                 </div>
               </div>
 
@@ -75,12 +75,33 @@ $productos = $ctrl->obtenerProductosVenta();
                 <div class="col-md-6">
                   <label for="clienteCalle" class="form-label">Calle</label>
                   <input type="text" class="form-control" id="clienteCalle" name="clienteCalle"
-                         value="<?php echo htmlspecialchars($pedido['calle']); ?>">
+                    value="<?php echo htmlspecialchars($pedido['calle']); ?>">
                 </div>
                 <div class="col-md-2">
                   <label for="clienteAltura" class="form-label">Altura</label>
                   <input type="number" class="form-control" id="clienteAltura" name="clienteAltura" min="0"
-                         value="<?php echo (int)$pedido['altura']; ?>">
+                    value="<?php echo (int)$pedido['altura']; ?>">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="clienteProvincia" class="form-label">Provincia *</label>
+                  <select id="clienteProvincia" name="clienteProvincia"
+                    class="form-select"
+                    data-selected="<?php echo (int)($pedido['provincia'] ?? 0); ?>">
+                    <option value="">Cargando provincias...</option>
+                  </select>
+                  <div class="invalid-feedback" data-for="clienteProvincia"></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="clienteLocalidad" class="form-label">Localidad *</label>
+                  <select id="clienteLocalidad" name="clienteLocalidad"
+                    class="form-select"
+                    data-selected="<?php echo (int)($pedido['localidad'] ?? 0); ?>"
+                    disabled>
+                    <option value="">Seleccione una provincia primero...</option>
+                  </select>
+                  <div class="invalid-feedback" data-for="clienteLocalidad"></div>
                 </div>
               </div>
             </div>
@@ -96,19 +117,19 @@ $productos = $ctrl->obtenerProductosVenta();
                 <div class="col-md-3">
                   <label for="fechaPedido" class="form-label">Fecha del pedido</label>
                   <?php
-                    // fechaPedido viene como Y-m-d H:i:s
-                    $fechaRaw = $pedido['fechaPedido'];
-                    $dt = DateTime::createFromFormat('Y-m-d H:i:s', $fechaRaw);
-                    $fechaValue = $dt ? $dt->format('Y-m-d') : date('Y-m-d');
+                  // fechaPedido viene como Y-m-d H:i:s
+                  $fechaRaw = $pedido['fechaPedido'];
+                  $dt = DateTime::createFromFormat('Y-m-d H:i:s', $fechaRaw);
+                  $fechaValue = $dt ? $dt->format('Y-m-d') : date('Y-m-d');
                   ?>
                   <input type="date" class="form-control" id="fechaPedido" name="fechaPedido"
-                         value="<?php echo $fechaValue; ?>">
+                    value="<?php echo $fechaValue; ?>">
                 </div>
                 <div class="col-md-9">
                   <label for="observaciones" class="form-label">Observaciones</label>
                   <textarea class="form-control" id="observaciones" name="observaciones" rows="2"><?php
-                    echo htmlspecialchars($pedido['observaciones'] ?? '');
-                  ?></textarea>
+                                                                                                  echo htmlspecialchars($pedido['observaciones'] ?? '');
+                                                                                                  ?></textarea>
                 </div>
               </div>
             </div>
@@ -133,8 +154,8 @@ $productos = $ctrl->obtenerProductosVenta();
                   </thead>
                   <tbody>
                     <?php
-                      $esPrimera = true;
-                      foreach ($detalle as $item):
+                    $esPrimera = true;
+                    foreach ($detalle as $item):
                     ?>
                       <tr class="fila-detalle">
                         <td>
@@ -142,8 +163,8 @@ $productos = $ctrl->obtenerProductosVenta();
                             <option value="">Seleccione un producto...</option>
                             <?php foreach ($productos as $prod): ?>
                               <option value="<?php echo $prod['idProducto']; ?>"
-                                      data-precio="<?php echo number_format($prod['precio_venta'], 2, '.', ''); ?>"
-                                      <?php echo ($prod['idProducto'] == $item['idProducto']) ? 'selected' : ''; ?>>
+                                data-precio="<?php echo number_format($prod['precio_venta'], 2, '.', ''); ?>"
+                                <?php echo ($prod['idProducto'] == $item['idProducto']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($prod['nombre']); ?>
                               </option>
                             <?php endforeach; ?>
@@ -151,22 +172,22 @@ $productos = $ctrl->obtenerProductosVenta();
                         </td>
                         <td>
                           <input type="number" name="cantidad[]" class="form-control campo-cantidad"
-                                 min="0.01" step="0.01"
-                                 value="<?php echo number_format($item['cantidad'], 2, '.', ''); ?>">
+                            min="0.01" step="0.01"
+                            value="<?php echo number_format($item['cantidad'], 2, '.', ''); ?>">
                         </td>
                         <td>
                           <input type="number" name="precioUnitario[]" class="form-control campo-precio"
-                                 min="0" step="0.01"
-                                 value="<?php echo number_format($item['precioUnitario'], 2, '.', ''); ?>">
+                            min="0" step="0.01"
+                            value="<?php echo number_format($item['precioUnitario'], 2, '.', ''); ?>">
                         </td>
                         <td>
                           <input type="number" name="subtotal[]" class="form-control campo-subtotal"
-                                 readonly step="0.01"
-                                 value="<?php echo number_format($item['subtotal'], 2, '.', ''); ?>">
+                            readonly step="0.01"
+                            value="<?php echo number_format($item['subtotal'], 2, '.', ''); ?>">
                         </td>
                         <td class="text-center">
                           <button type="button" class="btn btn-sm btn-outline-danger btnEliminarFila"
-                                  title="Eliminar línea">
+                            title="Eliminar línea">
                             <ion-icon name="trash-outline"></ion-icon>
                           </button>
                         </td>
@@ -188,8 +209,8 @@ $productos = $ctrl->obtenerProductosVenta();
                 <div class="input-group" style="max-width: 250px;">
                   <span class="input-group-text">Total</span>
                   <input type="text" class="form-control text-end" id="totalPedido" name="totalPedido"
-                         readonly
-                         value="<?php echo number_format($pedido['total'], 2, '.', ''); ?>">
+                    readonly
+                    value="<?php echo number_format($pedido['total'], 2, '.', ''); ?>">
                 </div>
               </div>
             </div>

@@ -82,6 +82,16 @@ include_once("../../includes/head_app.php");
                         <label class="form-label">Dirección</label>
                         <input type="text" id="verDireccion" class="form-control" readonly>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Provincia</label>
+                        <input type="text" id="verProvincia" class="form-control" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Localidad</label>
+                        <input type="text" id="verLocalidad" class="form-control" readonly>
+                    </div>
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -128,6 +138,21 @@ include_once("../../includes/head_app.php");
                         <label for="editAltura" class="form-label">Altura</label>
                         <input type="number" id="editAltura" name="altura" class="form-control" min="1" step="1">
                     </div>
+
+                    <div class="col-md-6">
+                        <label for="editProvincia" class="form-label">Provincia</label>
+                        <select id="editProvincia" name="provincia" class="form-select">
+                            <option value="">Seleccione...</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="editLocalidad" class="form-label">Localidad</label>
+                        <select id="editLocalidad" name="localidad" class="form-select" disabled>
+                            <option value="">Seleccione una provincia primero...</option>
+                        </select>
+                    </div>
+
 
                     <div class="col-md-3">
                         <label class="form-label">Estado</label>

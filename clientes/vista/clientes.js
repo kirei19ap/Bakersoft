@@ -24,7 +24,6 @@ function ensureInvalidFeedback(el) {
     }
     return fb;
 }
-
 function setInvalid(el, msg) {
     if (!el) return;
     el.classList.remove('is-valid');
@@ -32,24 +31,27 @@ function setInvalid(el, msg) {
     const fb = ensureInvalidFeedback(el);
     if (fb) fb.textContent = msg || 'Campo inválido';
 }
-
 function setValid(el) {
     if (!el) return;
     el.classList.remove('is-invalid');
     el.classList.add('is-valid');
 }
-
 function clearValidation(el) {
     if (!el) return;
     el.classList.remove('is-invalid', 'is-valid');
 }
-
 function focusFirstInvalid(container) {
     if (!container) return;
     const first = container.querySelector('.is-invalid');
     if (first && typeof first.focus === 'function') first.focus();
 }
 /** ============================================================ */
+
+async function fetchJSON(url, opts) {
+    const resp = await fetch(url, opts);
+    const json = await resp.json();
+    return json;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const tabla = document.getElementById('tablaClientes');
@@ -69,15 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const editAltura = document.getElementById('editAltura');
     const editEstado = document.getElementById('editEstado');
 
+    // NUEVO: selects
+    const editProvincia = document.getElementById('editProvincia');
+    const editLocalidad = document.getElementById('editLocalidad');
 
-    // Limpieza de validaciones al cerrar modal (evita “tildes” persistentes)
+    // Limpieza de validaciones al cerrar modal
     modalEditarEl.addEventListener('hidden.bs.modal', () => {
-        [editNombre, editTelefono, editEmail, editCalle, editAltura].forEach(el => clearValidation(el));
+        [editNombre, editTelefono, editEmail, editCalle, editAltura, editProvincia, editLocalidad].forEach(el => clearValidation(el));
         formEditar.reset();
+
+        if (editLocalidad) {
+            editLocalidad.innerHTML = `<option value="">Seleccione una provincia primero...</option>`;
+            editLocalidad.disabled = true;
+        }
     });
 
-    // Limpieza al tipear
-    [editNombre, editTelefono, editEmail, editCalle, editAltura].forEach(el => {
+    // Limpieza al tipear/cambiar
+    [editNombre, editTelefono, editEmail, editCalle, editAltura, editProvincia, editLocalidad].forEach(el => {
         if (!el) return;
         el.addEventListener('input', () => clearValidation(el));
         el.addEventListener('change', () => clearValidation(el));
@@ -103,46 +113,49 @@ document.addEventListener('DOMContentLoaded', () => {
         order: [[1, 'asc']]
     });
 
+    function badgeEstado(estado) {
+        switch (estado) {
+            case 'Activo': return '<span class="badge bg-success">Activo</span>';
+            case 'Eliminado': return '<span class="badge bg-danger">Eliminado</span>';
+            case 'Deshabilitado': return '<span class="badge bg-secondary">Deshabilitado</span>';
+            default: return `<span class="badge bg-light text-dark">${estado}</span>`;
+        }
+    }
+
     function renderAcciones(id, estado) {
         let acciones = `
-    <button class="btn btn-sm btn-success btn-ver" data-id="${id}">
-      <ion-icon name="eye-outline"></ion-icon>
-    </button>
-    <button class="btn btn-sm btn-primary btn-editar" data-id="${id}">
-      <ion-icon name="create-outline"></ion-icon>
-    </button>
-  `;
-
+      <button class="btn btn-sm btn-success btn-ver" data-id="${id}">
+        <ion-icon name="eye-outline"></ion-icon>
+      </button>
+      <button class="btn btn-sm btn-primary btn-editar" data-id="${id}">
+        <ion-icon name="create-outline"></ion-icon>
+      </button>
+    `;
         if (estado === 'Activo') {
             acciones += `
-      <button class="btn btn-sm btn-danger btn-eliminar" data-id="${id}">
-        <ion-icon name="trash-outline"></ion-icon>
-      </button>
-    `;
+        <button class="btn btn-sm btn-danger btn-eliminar" data-id="${id}">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      `;
         } else {
             acciones += `
-      <button class="btn btn-sm btn-success btn-reactivar" data-id="${id}">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </button>
-    `;
+        <button class="btn btn-sm btn-success btn-reactivar" data-id="${id}">
+          <ion-icon name="refresh-outline"></ion-icon>
+        </button>
+      `;
         }
-
         return `<div class="d-flex justify-content-center gap-2">${acciones}</div>`;
     }
 
-
     async function cargarTabla() {
         try {
-            const resp = await fetch('../controlador/controladorClientes.php?accion=listar');
-            const json = await resp.json();
-
+            const json = await fetchJSON('../controlador/controladorClientes.php?accion=listar');
             if (!json.ok) {
                 mostrarError(json.msg || 'No se pudo cargar la lista de clientes.');
                 return;
             }
 
             dt.clear();
-
             json.data.forEach(c => {
                 const direccion = `${c.calle || ''} ${c.altura || ''}`.trim();
                 dt.row.add([
@@ -154,9 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     badgeEstado(c.estado),
                     renderAcciones(c.id_cliente, c.estado)
                 ]);
-
             });
-
             dt.draw();
         } catch (e) {
             console.error(e);
@@ -165,10 +176,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function obtenerCliente(id) {
-        const resp = await fetch(`../controlador/controladorClientes.php?accion=obtener&id=${encodeURIComponent(id)}`);
-        const json = await resp.json();
+        const json = await fetchJSON(`../controlador/controladorClientes.php?accion=obtener&id=${encodeURIComponent(id)}`);
         if (!json.ok) throw new Error(json.msg || 'No se pudo obtener el cliente.');
         return json.data;
+    }
+
+    // ===== Provincias / Localidades =====
+    async function cargarProvincias(select, selectedId = null) {
+        if (!select) return;
+        const json = await fetchJSON('../controlador/controladorClientes.php?accion=listarProvincias');
+        if (!json.ok) throw new Error(json.msg || 'No se pudieron cargar provincias.');
+
+        const opts = ['<option value="">Seleccione...</option>']
+            .concat((json.data || []).map(p => `<option value="${p.id_provincia}">${p.provincia}</option>`));
+        select.innerHTML = opts.join('');
+
+        if (selectedId) select.value = String(selectedId);
+    }
+
+    async function cargarLocalidades(select, idProvincia, selectedId = null) {
+        if (!select) return;
+
+        if (!idProvincia) {
+            select.innerHTML = `<option value="">Seleccione una provincia primero...</option>`;
+            select.disabled = true;
+            return;
+        }
+
+        const json = await fetchJSON(`../controlador/controladorClientes.php?accion=listarLocalidades&id_provincia=${encodeURIComponent(idProvincia)}`);
+        if (!json.ok) throw new Error(json.msg || 'No se pudieron cargar localidades.');
+
+        const opts = ['<option value="">Seleccione...</option>']
+            .concat((json.data || []).map(l => `<option value="${l.id_localidad}">${l.localidad}</option>`));
+
+        select.innerHTML = opts.join('');
+        select.disabled = false;
+
+        if (selectedId) select.value = String(selectedId);
+    }
+
+    if (editProvincia) {
+        editProvincia.addEventListener('change', async () => {
+            clearValidation(editProvincia);
+            clearValidation(editLocalidad);
+            const idProv = (editProvincia.value || '').trim();
+            await cargarLocalidades(editLocalidad, idProv, null);
+        });
     }
 
     // Delegación de eventos en la tabla
@@ -177,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnEditar = e.target.closest('.btn-editar');
         const btnEliminar = e.target.closest('.btn-eliminar');
         const btnReactivar = e.target.closest('.btn-reactivar');
-
 
         try {
             if (btnVer) {
@@ -188,6 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('verTelefono').value = c.telefono || '';
                 document.getElementById('verEmail').value = c.email || '';
                 document.getElementById('verDireccion').value = `${c.calle || ''} ${c.altura || ''}`.trim();
+                document.getElementById('verProvincia').value = c.provincia_nombre || '';
+                document.getElementById('verLocalidad').value = c.localidad_nombre || '';
+
 
                 modalVer.show();
             }
@@ -204,8 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 editAltura.value = c.altura || '';
                 editEstado.value = c.estado || '';
 
-                // reset visual
-                [editNombre, editTelefono, editEmail, editCalle, editAltura].forEach(el => clearValidation(el));
+                [editNombre, editTelefono, editEmail, editCalle, editAltura, editProvincia, editLocalidad].forEach(el => clearValidation(el));
+
+                // Cargar provincias y localidades y preseleccionar
+                await cargarProvincias(editProvincia, c.provincia || null);
+                await cargarLocalidades(editLocalidad, c.provincia || null, c.localidad || null);
 
                 modalEditar.show();
             }
@@ -221,20 +279,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButtonText: 'Continuar',
                     cancelButtonText: 'Cancelar'
                 });
-
                 if (!res.isConfirmed) return;
 
                 const body = new URLSearchParams();
                 body.append('accion', 'eliminar');
                 body.append('idCliente', id);
 
-                const resp = await fetch('../controlador/controladorClientes.php', {
+                const json = await fetchJSON('../controlador/controladorClientes.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body
                 });
 
-                const json = await resp.json();
                 if (!json.ok) {
                     mostrarError(json.msg || 'No se pudo eliminar el cliente.');
                     return;
@@ -255,20 +311,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     confirmButtonText: 'Reactivar',
                     cancelButtonText: 'Cancelar'
                 });
-
                 if (!res.isConfirmed) return;
 
                 const body = new URLSearchParams();
                 body.append('accion', 'reactivar');
                 body.append('idCliente', id);
 
-                const resp = await fetch('../controlador/controladorClientes.php', {
+                const json = await fetchJSON('../controlador/controladorClientes.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body
                 });
 
-                const json = await resp.json();
                 if (!json.ok) {
                     mostrarError(json.msg);
                     return;
@@ -278,35 +332,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 cargarTabla();
             }
 
-
         } catch (err) {
             console.error(err);
             mostrarError(err.message || 'Ocurrió un error.');
         }
     });
 
-    //document.getElementById('filtroEstado').addEventListener('change', function () {
-   //     const val = this.value;
-    //    if (!val) {
-    //        dt.column(5).search('').draw(); // columna estado
-    //    } else {
-    //        dt.column(5).search(val).draw();
-    //    }
-    //});
-
-
     // Guardar cambios
     formEditar.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Limpieza previa
-        [editNombre, editTelefono, editEmail, editCalle, editAltura].forEach(el => clearValidation(el));
+        [editNombre, editTelefono, editEmail, editCalle, editAltura, editProvincia, editLocalidad].forEach(el => clearValidation(el));
 
         const nombre = (editNombre.value || '').trim();
         const telefono = (editTelefono.value || '').trim();
         const email = (editEmail.value || '').trim();
         const calle = (editCalle.value || '').trim();
         const altura = (editAltura.value || '').trim();
+        const provincia = (editProvincia?.value || '').trim();
+        const localidad = (editLocalidad?.value || '').trim();
 
         let ok = true;
 
@@ -319,8 +363,11 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (!/^\d+$/.test(altura) || parseInt(altura, 10) <= 0) { setInvalid(editAltura, 'Altura inválida.'); ok = false; }
         else setValid(editAltura);
 
+        if (!provincia) { setInvalid(editProvincia, 'Seleccione una provincia.'); ok = false; } else setValid(editProvincia);
+        if (!localidad) { setInvalid(editLocalidad, 'Seleccione una localidad.'); ok = false; } else setValid(editLocalidad);
+
         if (!ok) {
-            mostrarError('Debe completar nombre, teléfono, email, calle y altura.');
+            mostrarError('Debe completar todos los datos del cliente, incluyendo provincia y localidad.');
             focusFirstInvalid(formEditar);
             return;
         }
@@ -333,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmButtonText: 'Guardar',
             cancelButtonText: 'Cancelar'
         });
-
         if (!confirm.isConfirmed) return;
 
         try {
@@ -345,14 +391,15 @@ document.addEventListener('DOMContentLoaded', () => {
             body.append('email', email);
             body.append('calle', calle);
             body.append('altura', altura);
+            body.append('provincia', provincia);
+            body.append('localidad', localidad);
 
-            const resp = await fetch('../controlador/controladorClientes.php', {
+            const json = await fetchJSON('../controlador/controladorClientes.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body
             });
 
-            const json = await resp.json();
             if (!json.ok) {
                 mostrarError(json.msg || 'No se pudo actualizar el cliente.');
                 return;
@@ -361,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
             modalEditar.hide();
             mostrarOk(json.msg || 'Cliente actualizado.');
             cargarTabla();
-
         } catch (err) {
             console.error(err);
             mostrarError('Ocurrió un error al guardar.');
@@ -371,16 +417,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicial
     cargarTabla();
 });
-
-function badgeEstado(estado) {
-    switch (estado) {
-        case 'Activo':
-            return '<span class="badge bg-success">Activo</span>';
-        case 'Eliminado':
-            return '<span class="badge bg-danger">Eliminado</span>';
-        case 'Deshabilitado':
-            return '<span class="badge bg-secondary">Deshabilitado</span>';
-        default:
-            return `<span class="badge bg-light text-dark">${estado}</span>`;
-    }
-}

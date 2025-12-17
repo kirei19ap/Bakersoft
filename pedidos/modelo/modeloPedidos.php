@@ -115,6 +115,32 @@ class modeloPedidos
         }
     }
 
+    public function actualizarClienteCompleto(array $cliente)
+    {
+        $sql = "UPDATE clientes
+            SET nombre     = :nombre,
+                email      = :email,
+                telefono   = :telefono,
+                calle      = :calle,
+                altura     = :altura,
+                provincia  = :provincia,
+                localidad  = :localidad
+            WHERE id_cliente = :idCliente";
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            ':nombre'    => $cliente['nombre'],
+            ':email'     => $cliente['email'],
+            ':telefono'  => $cliente['telefono'],
+            ':calle'     => $cliente['calle'],
+            ':altura'    => $cliente['altura'],
+            ':provincia' => $cliente['provincia'],
+            ':localidad' => $cliente['localidad'],
+            ':idCliente' => $cliente['idCliente'],
+        ]);
+    }
+
+
 
 
     /**
@@ -286,53 +312,58 @@ class modeloPedidos
      * Obtiene pedido + cliente + detalle para edición.
      */
     public function obtenerPedidoCompleto(int $idPedidoVenta)
-    {
-        // Cabecera + cliente
-        $sql = "SELECT 
-                    pv.idPedidoVenta,
-                    pv.fechaPedido,
-                    pv.observaciones,
-                    pv.total,
-                    pv.estado,
-                    c.id_cliente,
-                    c.nombre,
-                    c.email,
-                    c.telefono,
-                    c.calle,
-                    c.altura,
-                    c.provincia,
-                    c.localidad
-                FROM pedidoventa pv
-                INNER JOIN clientes c ON pv.idCliente = c.id_cliente
-                WHERE pv.idPedidoVenta = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':id' => $idPedidoVenta]);
-        $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
+{
+    // Cabecera + cliente + provincia/localidad (nombres)
+    $sql = "SELECT 
+                pv.idPedidoVenta,
+                pv.fechaPedido,
+                pv.observaciones,
+                pv.total,
+                pv.estado,
+                c.id_cliente,
+                c.nombre,
+                c.email,
+                c.telefono,
+                c.calle,
+                c.altura,
+                c.provincia,
+                c.localidad,
+                p.provincia  AS provincia_nombre,
+                l.localidad  AS localidad_nombre
+            FROM pedidoventa pv
+            INNER JOIN clientes c ON pv.idCliente = c.id_cliente
+            LEFT JOIN provincias p ON p.id_provincia = c.provincia
+            LEFT JOIN localidades l ON l.id_localidad = c.localidad
+            WHERE pv.idPedidoVenta = :id";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([':id' => $idPedidoVenta]);
+    $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$pedido) {
-            return null;
-        }
-
-        // Detalle
-        $sqlDet = "SELECT 
-                        dpv.idDetallePedidoVenta,
-                        dpv.idProducto,
-                        p.nombre AS nombreProducto,
-                        dpv.cantidad,
-                        dpv.precioUnitario,
-                        dpv.subtotal
-                   FROM detallepedidoventa dpv
-                   INNER JOIN producto p ON dpv.idProducto = p.idProducto
-                   WHERE dpv.idPedidoVenta = :id";
-        $stmtDet = $this->pdo->prepare($sqlDet);
-        $stmtDet->execute([':id' => $idPedidoVenta]);
-        $detalle = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
-
-        return [
-            'pedido'  => $pedido,
-            'detalle' => $detalle
-        ];
+    if (!$pedido) {
+        return null;
     }
+
+    // Detalle
+    $sqlDet = "SELECT 
+                    dpv.idDetallePedidoVenta,
+                    dpv.idProducto,
+                    p.nombre AS nombreProducto,
+                    dpv.cantidad,
+                    dpv.precioUnitario,
+                    dpv.subtotal
+               FROM detallepedidoventa dpv
+               INNER JOIN producto p ON dpv.idProducto = p.idProducto
+               WHERE dpv.idPedidoVenta = :id";
+    $stmtDet = $this->pdo->prepare($sqlDet);
+    $stmtDet->execute([':id' => $idPedidoVenta]);
+    $detalle = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
+
+    return [
+        'pedido'  => $pedido,
+        'detalle' => $detalle
+    ];
+}
+
 
     /**
      * Actualiza cliente + cabecera + detalle de un pedido existente.

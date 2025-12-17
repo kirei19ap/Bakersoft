@@ -9,8 +9,8 @@ $idPedido = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $datos = $ctrl->obtenerPedidoCompleto($idPedido);
 
 if (!$datos) {
-    header("Location: index.php?msg=" . urlencode('Pedido no encontrado.') . "&tipo=error");
-    exit();
+  header("Location: index.php?msg=" . urlencode('Pedido no encontrado.') . "&tipo=error");
+  exit();
 }
 
 $pedido  = $datos['pedido'];
@@ -22,29 +22,29 @@ $descEstado = '';
 $badgeClass = 'bg-secondary';
 
 switch ($estado) {
-    case 70:
-        $descEstado = 'Generado';
-        $badgeClass = 'bg-warning text-dark';
-        break;
-    case 80:
-        $descEstado = 'Confirmado';
-        $badgeClass = 'bg-info text-dark';
-        break;
-    case 90:
-        $descEstado = 'Preparado';
-        $badgeClass = 'bg-primary';
-        break;
-    case 100:
-        $descEstado = 'Entregado';
-        $badgeClass = 'bg-success';
-        break;
-    case 60:
-        $descEstado = 'Cancelado';
-        $badgeClass = 'bg-danger';
-        break;
-    default:
-        $descEstado = 'Desconocido';
-        break;
+  case 70:
+    $descEstado = 'Generado';
+    $badgeClass = 'bg-warning text-dark';
+    break;
+  case 80:
+    $descEstado = 'Confirmado';
+    $badgeClass = 'bg-info text-dark';
+    break;
+  case 90:
+    $descEstado = 'Preparado';
+    $badgeClass = 'bg-primary';
+    break;
+  case 100:
+    $descEstado = 'Entregado';
+    $badgeClass = 'bg-success';
+    break;
+  case 60:
+    $descEstado = 'Cancelado';
+    $badgeClass = 'bg-danger';
+    break;
+  default:
+    $descEstado = 'Desconocido';
+    break;
 }
 
 // Fecha pedido en formato Y-m-d para input (solo lectura) y dd-mm-YYYY si lo querés en algún texto
@@ -53,14 +53,14 @@ $fechaInput = date('Y-m-d');
 $fechaTexto = '';
 
 if ($fechaRaw) {
-    $dt = DateTime::createFromFormat('Y-m-d H:i:s', $fechaRaw);
-    if ($dt) {
-        $fechaInput = $dt->format('Y-m-d');
-        $fechaTexto = $dt->format('d-m-Y');
-    } else {
-        $fechaInput = date('Y-m-d', strtotime($fechaRaw));
-        $fechaTexto = date('d-m-Y', strtotime($fechaRaw));
-    }
+  $dt = DateTime::createFromFormat('Y-m-d H:i:s', $fechaRaw);
+  if ($dt) {
+    $fechaInput = $dt->format('Y-m-d');
+    $fechaTexto = $dt->format('d-m-Y');
+  } else {
+    $fechaInput = date('Y-m-d', strtotime($fechaRaw));
+    $fechaTexto = date('d-m-Y', strtotime($fechaRaw));
+  }
 }
 ?>
 
@@ -99,18 +99,18 @@ if ($fechaRaw) {
             <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label">Nombre / Razón social</label>
-                <input type="text" class="form-control" 
-                       value="<?php echo htmlspecialchars($pedido['nombre']); ?>" readonly>
+                <input type="text" class="form-control"
+                  value="<?php echo htmlspecialchars($pedido['nombre']); ?>" readonly>
               </div>
               <div class="col-md-3">
                 <label class="form-label">Teléfono</label>
                 <input type="text" class="form-control"
-                       value="<?php echo htmlspecialchars($pedido['telefono']); ?>" readonly>
+                  value="<?php echo htmlspecialchars($pedido['telefono']); ?>" readonly>
               </div>
               <div class="col-md-3">
                 <label class="form-label">Email</label>
                 <input type="text" class="form-control"
-                       value="<?php echo htmlspecialchars($pedido['email']); ?>" readonly>
+                  value="<?php echo htmlspecialchars($pedido['email']); ?>" readonly>
               </div>
             </div>
 
@@ -118,14 +118,27 @@ if ($fechaRaw) {
               <div class="col-md-6">
                 <label class="form-label">Calle</label>
                 <input type="text" class="form-control"
-                       value="<?php echo htmlspecialchars($pedido['calle']); ?>" readonly>
+                  value="<?php echo htmlspecialchars($pedido['calle']); ?>" readonly>
               </div>
               <div class="col-md-2">
                 <label class="form-label">Altura</label>
                 <input type="text" class="form-control"
-                       value="<?php echo (int)$pedido['altura']; ?>" readonly>
+                  value="<?php echo (int)$pedido['altura']; ?>" readonly>
               </div>
             </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Provincia</label>
+                <input type="text" class="form-control"
+                  value="<?php echo htmlspecialchars($pedido['provincia_nombre'] ?? ''); ?>" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Localidad</label>
+                <input type="text" class="form-control"
+                  value="<?php echo htmlspecialchars($pedido['localidad_nombre'] ?? ''); ?>" readonly>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -139,13 +152,13 @@ if ($fechaRaw) {
               <div class="col-md-3">
                 <label class="form-label">Fecha del pedido</label>
                 <input type="date" class="form-control"
-                       value="<?php echo $fechaInput; ?>" readonly>
+                  value="<?php echo $fechaInput; ?>" readonly>
               </div>
               <div class="col-md-9">
                 <label class="form-label">Observaciones</label>
                 <textarea class="form-control" rows="2" readonly><?php
-                  echo htmlspecialchars($pedido['observaciones'] ?? '');
-                ?></textarea>
+                                                                  echo htmlspecialchars($pedido['observaciones'] ?? '');
+                                                                  ?></textarea>
               </div>
             </div>
           </div>
@@ -191,8 +204,8 @@ if ($fechaRaw) {
             <div class="d-flex justify-content-end mt-2">
               <div class="input-group" style="max-width: 250px;">
                 <span class="input-group-text">Total</span>
-                <input type="text" class="form-control text-end" 
-                       value="<?php echo '$ ' . number_format($pedido['total'], 2, ',', '.'); ?>" readonly>
+                <input type="text" class="form-control text-end"
+                  value="<?php echo '$ ' . number_format($pedido['total'], 2, ',', '.'); ?>" readonly>
               </div>
             </div>
           </div>

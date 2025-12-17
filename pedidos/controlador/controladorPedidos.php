@@ -55,6 +55,8 @@ class controladorPedidos
         $telefono    = trim($_POST['clienteTelefono'] ?? '');
         $calle       = trim($_POST['clienteCalle'] ?? '');
         $alturaInput = trim($_POST['clienteAltura'] ?? '');
+        $provincia   = (int)($_POST['clienteProvincia'] ?? 0);
+        $localidad   = (int)($_POST['clienteLocalidad'] ?? 0);
 
         // Control de modo cliente
         $modoCliente = $_POST['modoCliente'] ?? 'nuevo';
@@ -75,9 +77,11 @@ class controladorPedidos
                 $this->redirConError('Debe seleccionar un cliente existente o registrar uno nuevo.');
             }
         } else {
-            // Cliente nuevo: seguimos exigiendo nombre
             if ($nombre === '') {
                 $this->redirConError('Debe indicar el nombre del cliente.');
+            }
+            if ($provincia <= 0 || $localidad <= 0) {
+                $this->redirConError('Debe seleccionar provincia y localidad del cliente.');
             }
         }
 
@@ -95,10 +99,10 @@ class controladorPedidos
                 if ($idProd > 0 && $cant > 0) {
                     $subtotal = $cant * $precio;
                     $detalle[] = [
-                        'idProducto'    => $idProd,
-                        'cantidad'      => $cant,
+                        'idProducto'     => $idProd,
+                        'cantidad'       => $cant,
                         'precioUnitario' => $precio,
-                        'subtotal'      => $subtotal,
+                        'subtotal'       => $subtotal,
                     ];
                     $total += $subtotal;
                 }
@@ -110,8 +114,8 @@ class controladorPedidos
         }
 
         // Fecha datetime
-        $fechaBase      = $fechaPedido ?: date('Y-m-d');
-        $fechaDateTime  = $fechaBase . ' 00:00:00';
+        $fechaBase     = $fechaPedido ?: date('Y-m-d');
+        $fechaDateTime = $fechaBase . ' 00:00:00';
 
         $pedido = [
             'fechaPedido'   => $fechaDateTime,
@@ -121,38 +125,43 @@ class controladorPedidos
         ];
 
         if ($modoCliente === 'existente' && $idCliente > 0) {
-            // === CLIENTE EXISTENTE ===
-            // Si el nombre no viene vacío, asumimos que los datos del formulario
-            // son la versión actualizada y los grabamos en la tabla clientes.
+            // Si el formulario trae datos, los persistimos (incluye provincia/localidad)
             if ($nombre !== '') {
+                if ($provincia <= 0 || $localidad <= 0) {
+                    $this->redirConError('Debe seleccionar provincia y localidad del cliente.');
+                }
+
                 $clienteExistente = [
-                    'idCliente' => $idCliente,
-                    'nombre'    => $nombre,
-                    'email'     => $email,
-                    'telefono'  => $telefono,
-                    'calle'     => $calle,
-                    'altura'    => $alturaInput !== '' ? (int)$alturaInput : 0,
+                    'idCliente'  => $idCliente,
+                    'nombre'     => $nombre,
+                    'email'      => $email,
+                    'telefono'   => $telefono,
+                    'calle'      => $calle,
+                    'altura'     => $alturaInput !== '' ? (int)$alturaInput : 0,
+                    'provincia'  => $provincia,
+                    'localidad'  => $localidad,
                 ];
-                $this->modelo->actualizarClienteBasico($clienteExistente);
+
+                // Nuevo método en modeloPedidos (ver más abajo)
+                $this->modelo->actualizarClienteCompleto($clienteExistente);
             }
 
             $resultado = $this->modelo->registrarPedidoParaClienteExistente($idCliente, $pedido, $detalle);
         } else {
-            // === CLIENTE NUEVO (flujo anterior) ===
+            // CLIENTE NUEVO
             $cliente = [
                 'nombre'    => $nombre,
                 'email'     => $email,
                 'telefono'  => $telefono,
                 'calle'     => $calle,
                 'altura'    => $alturaInput !== '' ? (int)$alturaInput : 0,
-                'provincia' => 1,
-                'localidad' => 1,
+                'provincia' => $provincia,
+                'localidad' => $localidad,
                 'estado'    => 'Activo',
             ];
 
             $resultado = $this->modelo->registrarPedidoCompleto($cliente, $pedido, $detalle);
         }
-
 
         if ($resultado['ok']) {
             $this->redirConOk('Pedido registrado correctamente.', $resultado['idPedidoVenta']);
@@ -160,6 +169,7 @@ class controladorPedidos
             $this->redirConError('Ocurrió un error al registrar el pedido: ' . $resultado['error']);
         }
     }
+
 
     public function actualizarPedido()
     {
@@ -175,6 +185,9 @@ class controladorPedidos
         $telefono    = trim($_POST['clienteTelefono'] ?? '');
         $calle       = trim($_POST['clienteCalle'] ?? '');
         $alturaInput = trim($_POST['clienteAltura'] ?? '');
+        $provincia = (int)($_POST['clienteProvincia'] ?? 0);
+        $localidad = (int)($_POST['clienteLocalidad'] ?? 0);
+
 
         $fechaPedido   = $_POST['fechaPedido'] ?? date('Y-m-d');
         $observaciones = trim($_POST['observaciones'] ?? '');
@@ -214,16 +227,21 @@ class controladorPedidos
             $this->redirConError('El pedido debe contener al menos un producto con cantidad mayor a cero.');
         }
 
+        if ($provincia <= 0 || $localidad <= 0) {
+            $this->redirConError('Debe seleccionar provincia y localidad del cliente.');
+        }
+
         $cliente = [
-            'idCliente' => $idCliente,
-            'nombre'    => $nombre,
-            'email'     => $email,
-            'telefono'  => $telefono,
-            'calle'     => $calle,
-            'altura'    => $alturaInput !== '' ? (int)$alturaInput : 0,
-            'provincia' => 1,
-            'localidad' => 1,
+            'idCliente'  => $idCliente,
+            'nombre'     => $nombre,
+            'email'      => $email,
+            'telefono'   => $telefono,
+            'calle'      => $calle,
+            'altura'     => $alturaInput !== '' ? (int)$alturaInput : 0,
+            'provincia'  => $provincia,
+            'localidad'  => $localidad,
         ];
+
 
         $fechaBase      = $fechaPedido ?: date('Y-m-d');
         $fechaDateTime  = $fechaBase . ' 00:00:00';
@@ -400,17 +418,26 @@ class controladorPedidos
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $nombre   = trim($_POST['clienteNombre']   ?? '');
-        $telefono = trim($_POST['clienteTelefono'] ?? '');
-        $calle    = trim($_POST['clienteCalle']    ?? '');
-        $altura   = trim($_POST['clienteAltura']   ?? '');
-        $email    = trim($_POST['clienteEmail']    ?? '');
+        $nombre    = trim($_POST['clienteNombre']   ?? '');
+        $telefono  = trim($_POST['clienteTelefono'] ?? '');
+        $calle     = trim($_POST['clienteCalle']    ?? '');
+        $altura    = trim($_POST['clienteAltura']   ?? '');
+        $email     = trim($_POST['clienteEmail']    ?? '');
+        $provincia = (int)($_POST['clienteProvincia'] ?? 0);
+        $localidad = (int)($_POST['clienteLocalidad'] ?? 0);
 
-        // Validaciones de negocio: nombre, dirección y teléfono obligatorios
         if ($nombre === '' || $telefono === '' || $calle === '' || $altura === '') {
             echo json_encode([
                 'ok'    => false,
                 'error' => 'Nombre, teléfono, calle y altura del cliente son obligatorios para registrarlo.'
+            ]);
+            return;
+        }
+
+        if ($provincia <= 0 || $localidad <= 0) {
+            echo json_encode([
+                'ok'    => false,
+                'error' => 'Provincia y localidad del cliente son obligatorias para registrarlo.'
             ]);
             return;
         }
@@ -421,8 +448,8 @@ class controladorPedidos
             'telefono'  => $telefono,
             'calle'     => $calle,
             'altura'    => (int)$altura,
-            'provincia' => 1,
-            'localidad' => 1,
+            'provincia' => $provincia,
+            'localidad' => $localidad,
             'estado'    => 'Activo',
         ];
 
@@ -441,6 +468,7 @@ class controladorPedidos
             ]);
         }
     }
+
 
     public function apiTopProductos()
     {

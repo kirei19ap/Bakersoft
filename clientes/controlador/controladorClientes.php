@@ -47,14 +47,24 @@ try {
             json_out(['ok' => false, 'msg' => 'La altura debe ser un número mayor a cero.']);
         }
 
-        $ok = $mdl->actualizarBasico([
+        $provincia = (int)($_POST['provincia'] ?? 0);
+        $localidad = (int)($_POST['localidad'] ?? 0);
+
+        if ($provincia <= 0 || $localidad <= 0) {
+            json_out(['ok' => false, 'msg' => 'Provincia y localidad son obligatorias.']);
+        }
+
+        $ok = $mdl->actualizar([
             'idCliente' => $idCliente,
             'nombre'    => $nombre,
             'email'     => $email,
             'telefono'  => $telefono,
             'calle'     => $calle,
-            'altura'    => (int)$altura
+            'altura'    => $altura,
+            'provincia' => $provincia,
+            'localidad' => $localidad
         ]);
+
 
         json_out(['ok' => $ok, 'msg' => $ok ? 'Cliente actualizado correctamente.' : 'No se pudo actualizar el cliente.']);
     }
@@ -78,6 +88,20 @@ try {
             'msg' => $ok ? 'Cliente reactivado correctamente.' : 'No se pudo reactivar el cliente.'
         ]);
     }
+
+    if ($accion === 'listarProvincias') {
+        $rows = $mdl->listarProvincias();
+        json_out(['ok' => true, 'data' => $rows]);
+    }
+
+    if ($accion === 'listarLocalidades') {
+        $idProv = isset($_GET['id_provincia']) ? (int)$_GET['id_provincia'] : 0;
+        if ($idProv <= 0) json_out(['ok' => false, 'msg' => 'Provincia inválida.']);
+
+        $rows = $mdl->listarLocalidadesPorProvincia($idProv);
+        json_out(['ok' => true, 'data' => $rows]);
+    }
+
 
 
     json_out(['ok' => false, 'msg' => 'Acción no válida.']);
